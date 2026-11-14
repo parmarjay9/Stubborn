@@ -33,8 +33,8 @@ export default function StubUpload({ onPick, onManual }: { onPick: (file: File) 
 
   return (
     <div className="grid gap-3">
-      <div className="card grid place-items-center gap-2 border-2 border-dashed py-8 text-center">
-        <svg viewBox="0 0 24 24" className="h-12 w-12 text-accent" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <div className="grid place-items-center gap-2 rounded-2xl border-2 border-dashed border-ink/50 bg-card/70 px-5 py-8 text-center">
+        <svg viewBox="0 0 24 24" className="h-12 w-12 text-ink" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
           <path d="M9 8h6M9 12h6M9 16h3" />
         </svg>

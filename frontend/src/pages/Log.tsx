@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import ChainBadge from '../components/ChainBadge'
 import ClockButton from '../components/ClockButton'
 import ShiftList from '../components/ShiftList'
+import StepTrail from '../components/StepTrail'
 import { api, type VerifyResult } from '../lib/api'
 import { getDeviceId, isDemo } from '../lib/device'
 import type { Entry } from '../lib/hashchain'
@@ -46,8 +47,9 @@ export default function Log() {
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">My hours</h1>
-        <p className="mt-1 text-muted">Your own record. One tap in, one tap out.</p>
+        <StepTrail current={1} />
+        <h1 className="mt-3 text-4xl font-extrabold">My hours</h1>
+        <p className="mt-1 text-muted">Your timeclock, not theirs. One tap in, one tap out.</p>
       </div>
 
       {error && (
@@ -72,7 +74,7 @@ export default function Log() {
       )}
 
       {isDemo() && (
-        <label className="flex items-center justify-between gap-4 rounded-2xl border border-dashed border-warn/50 bg-warn-soft/50 px-4 py-3 text-sm">
+        <label className="flex items-center justify-between gap-4 rounded-xl border-2 border-dashed border-warn bg-warn-soft px-4 py-3 text-sm">
           <span>
             <span className="font-semibold text-warn">Demo only:</span> edit one saved entry behind the log's back
           </span>

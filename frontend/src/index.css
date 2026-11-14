@@ -1,19 +1,31 @@
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource/space-mono/400.css';
+@import '@fontsource/space-mono/700.css';
 @import 'tailwindcss';
 
+/* Look: a paper timecard and a pay stub. Manila paper, ink borders with hard
+   shadows, one highlighter yellow, rubber stamps, receipt edges.
+   Green, amber and red are status colors only. */
 @theme {
-  --color-paper: #f7f6f2;
-  --color-card: #ffffff;
-  --color-ink: #1b1d1a;
-  --color-muted: #5f665f;
-  --color-line: #e3e1d9;
+  --color-paper: #f2ecdf;
+  --color-card: #fffdf7;
+  --color-ink: #17160f;
+  --color-muted: #5e5a4c;
+  --color-line: #d8cfbb;
+  --color-hi: #ffd23f;
+  --color-hi-soft: #fff3c4;
   --color-accent: #0b6e4f;
   --color-accent-dark: #085a40;
-  --color-accent-soft: #e3f2ec;
-  --color-warn: #b45309;
-  --color-warn-soft: #fef3c7;
+  --color-accent-soft: #dff1e8;
+  --color-warn: #a3470a;
+  --color-warn-soft: #fde9c8;
   --color-bad: #b42318;
-  --color-bad-soft: #fee4e2;
+  --color-bad-soft: #fde0dc;
   --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --shadow-hard: 4px 4px 0 var(--color-ink);
+  --shadow-hard-sm: 2px 2px 0 var(--color-ink);
 }
 
 :root {
@@ -28,11 +40,20 @@ body,
 
 body {
   margin: 0;
-  background: var(--color-paper);
+  background-color: var(--color-paper);
+  /* faint ruled lines, like ledger paper */
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(23 22 15 / 0.035) 31px 32px);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 
 button,
@@ -43,31 +64,75 @@ label {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: 3px solid var(--color-ink);
+  outline-offset: 3px;
 }
 
 @layer components {
   .btn {
-    @apply inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl px-5 text-lg font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100;
+    @apply inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl border-2 border-ink px-5 font-display text-lg font-extrabold shadow-hard transition-[transform,box-shadow] duration-100 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-50 disabled:active:translate-x-0 disabled:active:translate-y-0 disabled:active:shadow-hard;
   }
   .btn-primary {
-    @apply bg-accent text-white hover:bg-accent-dark;
+    @apply bg-hi text-ink;
   }
   .btn-secondary {
-    @apply border-2 border-ink/15 bg-card text-ink hover:border-ink/30;
+    @apply bg-card text-ink;
   }
   .card {
-    @apply rounded-3xl border border-line bg-card p-5;
+    @apply rounded-2xl border-2 border-ink bg-card p-5 shadow-hard;
   }
   .field {
-    @apply block min-h-12 w-full rounded-xl border border-line bg-white px-3 text-base text-ink;
+    @apply block min-h-12 w-full rounded-lg border-2 border-ink/70 bg-white px-3 text-base text-ink focus:border-ink;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-muted;
+    @apply mb-1 block text-sm font-semibold text-muted;
   }
   .skeleton {
     @apply animate-pulse rounded-xl bg-line/70;
+  }
+  /* small uppercase mono tag, like a printed form label */
+  .tag {
+    @apply font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em];
+  }
+  /* highlighter swipe behind text */
+  .hl {
+    background: linear-gradient(to top, var(--color-hi) 0 42%, transparent 42%);
+    padding: 0 0.12em;
+    margin: 0 -0.12em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  /* rubber stamp */
+  .stamp {
+    @apply inline-block -rotate-6 rounded-md border-[3px] px-2 py-1 font-mono text-xs font-bold uppercase tracking-[0.16em];
+    border-style: double;
+    border-width: 5px;
+  }
+  /* receipt with a torn zigzag bottom edge; the wrapper carries the shadow */
+  .receipt-wrap {
+    filter: drop-shadow(4px 4px 0 var(--color-ink));
+  }
+  .receipt {
+    @apply relative bg-card font-mono;
+    --tooth: 14px;
+    padding-bottom: 6px;
+    mask:
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--tooth) 51% repeat-x,
+      linear-gradient(#000 0 0) top / 100% calc(100% - 7px) no-repeat;
+  }
+  /* label ......... value */
+  .leader {
+    @apply flex items-baseline gap-2;
+  }
+  .leader::before {
+    content: '';
+    order: 2;
+    flex: 1;
+    border-bottom: 2px dotted rgb(23 22 15 / 0.35);
+    transform: translateY(-4px);
+  }
+  .leader > :last-child {
+    order: 3;
   }
 }
 
@@ -85,8 +150,41 @@ label {
   animation: pop 0.25s ease-out both;
 }
 
+@keyframes thunk {
+  0% {
+    opacity: 0;
+    transform: rotate(-6deg) scale(1.9);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(-6deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-6deg) scale(1);
+  }
+}
+.thunk {
+  animation: thunk 0.32s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes scan {
+  0%,
+  100% {
+    top: 8%;
+  }
+  50% {
+    top: 86%;
+  }
+}
+.scan {
+  animation: scan 2.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pop,
+  .thunk,
+  .scan,
   .animate-pulse,
   .animate-spin {
     animation: none;

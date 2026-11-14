@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ConfirmFields from '../components/ConfirmFields'
+import StepTrail from '../components/StepTrail'
 import StubUpload, { prepareImage } from '../components/StubUpload'
 import { api, uploadStub, type StubFieldName, type StubFields } from '../lib/api'
 import { getDeviceId } from '../lib/device'
@@ -70,9 +71,10 @@ export default function Check() {
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">Check my pay stub</h1>
+        <StepTrail current={2} />
+        <h1 className="mt-3 text-4xl font-extrabold">Check my pay stub</h1>
         <p className="mt-1 text-muted">
-          {stage === 'confirm' ? 'Step 2 of 2. Confirm the numbers.' : 'Step 1 of 2. Snap a photo of your stub.'}
+          {stage === 'confirm' ? 'Almost there. Confirm the numbers we read.' : 'Snap a photo. We will line it up against your log.'}
         </p>
       </div>
 

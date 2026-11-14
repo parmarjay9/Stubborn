@@ -116,8 +116,8 @@ export default function AgentStatus({ claim, ready }: { claim: Claim; ready: boo
       )}
 
       {finished && (
-        <div className="pop grid gap-3 rounded-2xl bg-accent-soft p-4 text-accent-dark">
-          <p className="font-bold">Stopped before submit. Nothing was sent.</p>
+        <div className="pop grid gap-3 rounded-xl border-2 border-accent bg-accent-soft p-4 text-accent-dark">
+          <p className="font-display text-lg font-extrabold">Stopped before submit. Nothing was sent.</p>
           <p className="text-sm">Read every box yourself. You decide whether to send it.</p>
           <a href={reviewUrl(claim)} target="_blank" rel="noreferrer" className="btn btn-primary !min-h-12 !text-base">
             Review the filled form

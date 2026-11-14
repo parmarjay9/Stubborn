@@ -50,7 +50,7 @@ export default function ConfirmFields({
               </label>
               <input
                 id={field.name}
-                className={`field tabular-nums ${unsure ? '!border-warn bg-warn-soft' : ''}`}
+                className={`field font-mono ${unsure ? '!border-warn bg-warn-soft' : ''}`}
                 type={field.kind === 'date' ? 'date' : 'text'}
                 inputMode={field.kind === 'date' ? undefined : 'decimal'}
                 placeholder={field.kind === 'date' ? undefined : '0.00'}

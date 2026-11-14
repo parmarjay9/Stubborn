@@ -33,7 +33,7 @@ export default function LetterView({ letters }: { letters: Letters }) {
 
   return (
     <div className="pop grid gap-3">
-      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-2xl bg-paper p-1">
+      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-xl border-2 border-ink bg-paper p-1">
         {TABS.map((item) => (
           <button
             key={item.id}
@@ -44,14 +44,14 @@ export default function LetterView({ letters }: { letters: Letters }) {
               setTab(item.id)
               setCopied(false)
             }}
-            className={`min-h-11 rounded-xl text-sm font-semibold ${tab === item.id ? 'bg-card text-ink shadow-sm' : 'text-muted'}`}
+            className={`min-h-11 rounded-lg text-sm font-bold ${tab === item.id ? 'bg-hi text-ink' : 'text-muted'}`}
           >
             {item.label}
           </button>
         ))}
       </div>
 
-      <p className="whitespace-pre-wrap rounded-2xl border border-line bg-white p-4 text-[0.95rem] leading-relaxed">{text}</p>
+      <p className="whitespace-pre-wrap rounded-xl border-2 border-ink/70 bg-white p-4 text-[0.95rem] leading-relaxed">{text}</p>
 
       <div className="grid grid-cols-2 gap-3">
         <button

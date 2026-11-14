@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Breakdown from '../components/Breakdown'
 import OwedCard from '../components/OwedCard'
+import StepTrail from '../components/StepTrail'
 import { store } from '../lib/store'
 
 export default function Result() {
@@ -9,7 +10,10 @@ export default function Result() {
   if (!check) {
     return (
       <div className="grid gap-5">
-        <h1 className="text-3xl font-black tracking-tight">Your result</h1>
+        <div>
+          <StepTrail current={2} />
+          <h1 className="mt-3 text-4xl font-extrabold">Your result</h1>
+        </div>
         <div className="card text-center">
           <p className="font-semibold">No pay stub checked yet</p>
           <p className="mt-1 text-sm text-muted">Snap a photo of your stub and your result will show up here.</p>
@@ -25,7 +29,10 @@ export default function Result() {
 
   return (
     <div className="grid gap-5">
-      <h1 className="text-3xl font-black tracking-tight">Your result</h1>
+      <div>
+          <StepTrail current={2} />
+          <h1 className="mt-3 text-4xl font-extrabold">Your result</h1>
+        </div>
 
       <OwedCard check={check} />
 

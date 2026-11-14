@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AgentStatus from '../components/AgentStatus'
 import LetterView from '../components/LetterView'
+import StepTrail from '../components/StepTrail'
 import { api, type Claim, type Worker } from '../lib/api'
 import { hoursText, money } from '../lib/format'
 import { store } from '../lib/store'
@@ -32,7 +33,10 @@ export default function Act() {
   if (!check) {
     return (
       <div className="grid gap-5">
-        <h1 className="text-3xl font-black tracking-tight">Take action</h1>
+        <div>
+          <StepTrail current={3} />
+          <h1 className="mt-3 text-4xl font-extrabold">Take action</h1>
+        </div>
         <div className="card text-center">
           <p className="font-semibold">Check a pay stub first</p>
           <p className="mt-1 text-sm text-muted">Once you have a result, you can write to your manager or get a claim form ready here.</p>
@@ -89,14 +93,15 @@ export default function Act() {
   return (
     <div className="grid gap-5">
       <div>
-        <h1 className="text-3xl font-black tracking-tight">Take action</h1>
+        <StepTrail current={3} />
+        <h1 className="mt-3 text-4xl font-extrabold">Take action</h1>
         <p className="mt-1 text-muted">
           {check.totals.owed !== '0.00' ? `${money(check.totals.owed)} possibly owed. Here are two ways to ask about it.` : 'Your last check found nothing missing.'}
         </p>
       </div>
 
       <section className="card grid gap-3">
-        <h2 className="font-bold">About you</h2>
+        <h2 className="text-xl font-extrabold">About you</h2>
         {WORKER_FIELDS.map((field) => (
           <div key={field.name}>
             <label htmlFor={`worker-${field.name}`} className="label">
@@ -116,7 +121,7 @@ export default function Act() {
       </section>
 
       <section ref={letterRef} className="card grid scroll-mt-20 gap-3">
-        <h2 className="font-bold">1. Write to my manager</h2>
+        <h2 className="text-xl font-extrabold">1. Write to my manager</h2>
         <p className="text-sm text-muted">A short, polite note that asks them to check the records. Most pay mix-ups get fixed this way.</p>
         {letters ? (
           <>
@@ -139,7 +144,7 @@ export default function Act() {
       </section>
 
       <section ref={claimRef} className="card grid scroll-mt-20 gap-3">
-        <h2 className="font-bold">2. File a wage claim</h2>
+        <h2 className="text-xl font-extrabold">2. File a wage claim</h2>
         <p className="text-sm text-muted">
           A web agent fills in a claim form with your details and your numbers, then stops so you can review. It never
           presses submit.
