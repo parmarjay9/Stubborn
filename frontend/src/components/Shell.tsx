@@ -23,7 +23,7 @@ export function Footer() {
       <p className="font-display text-lg font-extrabold text-ink">Stay stubborn.</p>
       <p className="mt-2">Stubborn flags possible underpayment. It is not legal advice.</p>
       <p className="mt-1">
-        Built by <span className="font-bold text-ink">Jay Parmar</span> at <span className="font-bold text-ink">sunhacks 2026</span>, ASU
+        Built by <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> at <span className="font-bold text-ink">sunhacks 2026</span>, ASU
         Tempe.
       </p>
     </footer>

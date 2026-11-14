@@ -103,7 +103,9 @@ export default function DemoClaimForm() {
         )}
 
         <footer className="mt-10 border-t border-line pt-5 text-center text-sm text-muted">
-          Demo page built by Jay Parmar at sunhacks 2026. Not affiliated with any government agency.
+          Demo page built by{' '}
+          <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">Jay Parmar</a>{' '}
+          at sunhacks 2026. Not affiliated with any government agency.
         </footer>
       </main>
     </div>

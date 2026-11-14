@@ -1,6 +1,7 @@
 @import '@fontsource-variable/bricolage-grotesque';
-@import '@fontsource/space-mono/400.css';
-@import '@fontsource/space-mono/700.css';
+@import '@fontsource-variable/inter';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/600.css';
 @import 'tailwindcss';
 
 /* Look: a paper timecard and a pay stub. Manila paper, ink borders with hard
@@ -10,7 +11,7 @@
   --color-paper: #f2ecdf;
   --color-card: #fffdf7;
   --color-ink: #17160f;
-  --color-muted: #5e5a4c;
+  --color-muted: #4d4a3e;
   --color-line: #d8cfbb;
   --color-hi: #ffd23f;
   --color-hi-soft: #fff3c4;
@@ -21,9 +22,9 @@
   --color-warn-soft: #fde9c8;
   --color-bad: #b42318;
   --color-bad-soft: #fde0dc;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'Space Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --shadow-hard: 4px 4px 0 var(--color-ink);
   --shadow-hard-sm: 2px 2px 0 var(--color-ink);
 }
@@ -45,6 +46,8 @@ body {
   background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(23 22 15 / 0.035) 31px 32px);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -92,7 +95,7 @@ label {
   }
   /* small uppercase mono tag, like a printed form label */
   .tag {
-    @apply font-mono text-[0.7rem] font-bold uppercase tracking-[0.14em];
+    @apply font-sans text-xs font-bold uppercase tracking-[0.06em];
   }
   /* highlighter swipe behind text */
   .hl {
@@ -104,7 +107,7 @@ label {
   }
   /* rubber stamp */
   .stamp {
-    @apply inline-block -rotate-6 rounded-md border-[3px] px-2 py-1 font-mono text-xs font-bold uppercase tracking-[0.16em];
+    @apply inline-block -rotate-6 rounded-md border-[3px] px-2 py-1 font-sans text-xs font-extrabold uppercase tracking-[0.08em];
     border-style: double;
     border-width: 5px;
   }

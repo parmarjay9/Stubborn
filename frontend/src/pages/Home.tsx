@@ -10,7 +10,7 @@ import { store } from '../lib/store'
 
 const PunchVignette = ({ out }: { out?: boolean }) => (
   <div className="flex items-center gap-3">
-    <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-ink text-[0.6rem] font-black uppercase leading-tight shadow-hard-sm ${out ? 'bg-ink text-hi' : 'bg-hi'}`}>
+    <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-ink text-[0.72rem] font-black uppercase leading-tight shadow-hard-sm ${out ? 'bg-ink text-hi' : 'bg-hi'}`}>
       {out ? 'Out' : 'In'}
     </span>
     <span className="font-mono text-xs leading-relaxed">
@@ -22,7 +22,7 @@ const PunchVignette = ({ out }: { out?: boolean }) => (
 )
 
 const SnapVignette = () => (
-  <div className="relative mx-auto w-40 overflow-hidden rounded border-2 border-ink bg-white p-2 font-mono text-[0.6rem] leading-relaxed">
+  <div className="relative mx-auto w-48 overflow-hidden rounded border-2 border-ink bg-white p-2 font-mono text-[0.72rem] leading-relaxed">
     <p className="font-bold">EARNINGS STATEMENT</p>
     <p>Regular hours ..... 38.00</p>
     <p>Rate ............. $17.00</p>
@@ -34,10 +34,10 @@ const SnapVignette = () => (
 const ConfirmVignette = () => (
   <div className="grid grid-cols-2 gap-2 font-mono text-xs">
     <span className="rounded border-2 border-ink/70 bg-white px-2 py-1">
-      <span className="block text-[0.6rem] text-muted">Rate</span>17.00
+      <span className="block text-[0.72rem] text-muted">Rate</span>17.00
     </span>
     <span className="rounded border-2 border-warn bg-warn-soft px-2 py-1">
-      <span className="block text-[0.6rem] font-bold text-warn">Please check</span>38.00
+      <span className="block text-[0.72rem] font-bold text-warn">Please check</span>38.00
     </span>
   </div>
 )

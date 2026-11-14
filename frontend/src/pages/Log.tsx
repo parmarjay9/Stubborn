@@ -76,9 +76,13 @@ export default function Log() {
       {isDemo() && (
         <label className="flex items-center justify-between gap-4 rounded-xl border-2 border-dashed border-warn bg-warn-soft px-4 py-3 text-sm">
           <span>
-            <span className="font-semibold text-warn">Sample account only:</span> edit one saved entry behind the log's back
+            <span className="block font-bold text-warn">Try it: secretly change a saved clock-out time</span>
+            <span className="mt-0.5 block text-muted">
+              This pretends someone went into the records and added an hour to an old shift. Watch the badge above catch
+              it. Switch it off to undo.
+            </span>
           </span>
-          <input type="checkbox" className="h-6 w-6 accent-[var(--color-bad)]" checked={tampered} disabled={toggling} onChange={toggleTamper} />
+          <input type="checkbox" aria-label="Change a saved clock-out time" className="h-7 w-7 shrink-0 accent-[var(--color-bad)]" checked={tampered} disabled={toggling} onChange={toggleTamper} />
         </label>
       )}
 
