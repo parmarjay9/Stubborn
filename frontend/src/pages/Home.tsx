@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import ChainDemo from '../components/ChainDemo'
 import { api } from '../lib/api'
-import { getDeviceId } from '../lib/device'
+import { SAMPLE_WORKER, getDeviceId, isDemo, setDemo } from '../lib/device'
 import { money } from '../lib/format'
 import { store } from '../lib/store'
 
@@ -239,6 +239,27 @@ export default function Home() {
       </section>
 
       <NextStep />
+
+      {!isDemo() && (
+        <section className="rounded-2xl border-2 border-dashed border-ink bg-hi-soft p-5">
+          <p className="tag text-muted">Just looking?</p>
+          <h2 className="mt-1 text-2xl font-extrabold">Try the sample account</h2>
+          <p className="mt-1.5 text-[0.95rem] leading-snug text-muted">
+            Step into the shoes of {SAMPLE_WORKER.name}, a made-up warehouse worker. Four weeks of hours are already
+            logged and three pay stubs are already checked, so you can see hours against pay stubs right away.
+          </p>
+          <button
+            type="button"
+            className="btn btn-secondary mt-4"
+            onClick={() => {
+              setDemo(true)
+              location.assign('/history')
+            }}
+          >
+            Open the sample account
+          </button>
+        </section>
+      )}
 
       <section id="how" className="scroll-mt-20">
         <p className="tag text-muted">How it works</p>

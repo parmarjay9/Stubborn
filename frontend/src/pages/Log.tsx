@@ -76,7 +76,7 @@ export default function Log() {
       {isDemo() && (
         <label className="flex items-center justify-between gap-4 rounded-xl border-2 border-dashed border-warn bg-warn-soft px-4 py-3 text-sm">
           <span>
-            <span className="font-semibold text-warn">Demo only:</span> edit one saved entry behind the log's back
+            <span className="font-semibold text-warn">Sample account only:</span> edit one saved entry behind the log's back
           </span>
           <input type="checkbox" className="h-6 w-6 accent-[var(--color-bad)]" checked={tampered} disabled={toggling} onChange={toggleTamper} />
         </label>

@@ -95,7 +95,8 @@ def verify(event):
 
 def demo(event):
     """Stage demo helpers. tamper edits one stored entry without re-hashing it,
-    so the chain breaks. restore puts it back. reset clears the device."""
+    so the chain breaks. restore puts it back. reset clears the device.
+    seed clears it and loads the sample account history."""
     if not config.DEMO_MODE:
         raise BadRequest("Demo tools are turned off.", 403)
     body = body_of(event)
@@ -106,6 +107,10 @@ def demo(event):
 
     if action == "reset":
         store.delete_shifts(device_id)
+        store.delete_checks(device_id)
+    elif action == "seed":
+        from common import sample
+        sample.seed(device_id)
     elif action == "tamper":
         if not chain:
             raise BadRequest("There is nothing in the log to change yet.")
@@ -123,7 +128,7 @@ def demo(event):
                     "clientTs": entry["origClientTs"], "origClientTs": None,
                 })
     else:
-        raise BadRequest("action must be tamper, restore or reset.")
+        raise BadRequest("action must be tamper, restore, reset or seed.")
 
     chain = store.list_shifts(device_id)
     return 200, {**verify_chain(chain), "tampered": any("origClientTs" in e for e in chain)}

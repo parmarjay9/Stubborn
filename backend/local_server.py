@@ -47,6 +47,7 @@ ROUTES = [
     ("POST", r"/stub/upload-url", stub_handler.handler),
     ("POST", r"/stub/extract", stub_handler.handler),
     ("POST", r"/check", check_handler.handler),
+    ("GET", r"/history", check_handler.handler),
     ("POST", r"/letters", letters_handler.handler),
     ("POST", r"/agent/start", agent_start.handler),
     ("GET", r"/agent/status/(?P<runId>[^/]+)", agent_status.handler),

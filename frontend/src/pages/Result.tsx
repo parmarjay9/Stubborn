@@ -61,9 +61,14 @@ export default function Result() {
         </div>
       )}
 
-      <Link to="/check" className="text-center text-sm font-semibold text-muted underline">
-        Check another pay stub
-      </Link>
+      <div className="flex justify-center gap-6 text-sm font-semibold text-muted">
+        <Link to="/history" className="underline">
+          See all pay periods
+        </Link>
+        <Link to="/check" className="underline">
+          Check another stub
+        </Link>
+      </div>
     </div>
   )
 }

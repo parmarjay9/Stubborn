@@ -1,5 +1,6 @@
 // Small localStorage-backed state that carries between pages.
 import type { CheckResult, Letters, Worker } from './api'
+import { SAMPLE_WORKER, isDemo } from './device'
 
 function load<T>(key: string, fallback: T): T {
   try {
@@ -27,7 +28,8 @@ export const store = {
     save('stubborn.lastCheck', check)
     save('stubborn.letters', null) // letters belong to one check
   },
-  getWorker: () => ({ ...EMPTY_WORKER, ...load<Partial<Worker>>('stubborn.worker', {}) }),
+  // The sample account comes with its made-up worker already filled in.
+  getWorker: () => ({ ...EMPTY_WORKER, ...(isDemo() ? SAMPLE_WORKER : {}), ...load<Partial<Worker>>('stubborn.worker', {}) }),
   setWorker: (worker: Worker) => save('stubborn.worker', worker),
   getLetters: () => load<Letters | null>('stubborn.letters', null),
   setLetters: (letters: Letters) => save('stubborn.letters', letters),

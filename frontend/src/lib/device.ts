@@ -1,9 +1,16 @@
-// No accounts. Each device gets a random id that acts as the user key.
-
-export const DEMO_DEVICE_ID = '5eedde70-0000-4000-8000-00000000d340'
+// No sign-in. Each browser gets a random id that acts as the user key.
+//
+// The sample account is a second id kept next to the real one. Every browser
+// gets its own copy of the sample data, so visitors cannot change each other's.
 
 const DEVICE_KEY = 'stubborn.deviceId'
-const DEMO_KEY = 'stubborn.demo'
+const SAMPLE_KEY = 'stubborn.sampleId'
+const MODE_KEY = 'stubborn.demo'
+const SEEDED_KEY = 'stubborn.sampleSeeded'
+// Page state that belongs to one account and must not leak into the other.
+const PER_ACCOUNT_KEYS = ['stubborn.lastCheck', 'stubborn.letters', 'stubborn.worker']
+
+export const SAMPLE_WORKER = { name: 'Alex Rivera', employer: 'Desert Sun Logistics LLC' }
 
 function read(key: string): string | null {
   try {
@@ -18,7 +25,7 @@ function write(key: string, value: string | null) {
     if (value === null) localStorage.removeItem(key)
     else localStorage.setItem(key, value)
   } catch {
-    // Private mode: the id just lasts for this page load.
+    // Private mode: the value just lasts for this page load.
   }
 }
 
@@ -32,24 +39,44 @@ function uuid(): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
 }
 
-// ?demo=1 switches this browser to the seeded demo device, ?demo=0 switches back.
-const flag = new URLSearchParams(location.search).get('demo')
-if (flag === '1') write(DEMO_KEY, '1')
-if (flag === '0') write(DEMO_KEY, null)
+const memory: Record<string, string> = {}
 
-let memoryId: string | null = null
-
-export function isDemo(): boolean {
-  return read(DEMO_KEY) === '1'
-}
-
-export function getDeviceId(): string {
-  if (isDemo()) return DEMO_DEVICE_ID
-  let id = read(DEVICE_KEY) ?? memoryId
+function idFor(key: string): string {
+  let id = read(key) ?? memory[key]
   if (!id) {
     id = uuid()
-    memoryId = id
-    write(DEVICE_KEY, id)
+    memory[key] = id
+    write(key, id)
   }
   return id
 }
+
+/** True while this browser is looking at the sample account. */
+export function isDemo(): boolean {
+  return read(MODE_KEY) === '1'
+}
+
+/** Switch between the sample account and the visitor's own (empty) one. */
+export function setDemo(on: boolean) {
+  if (on === isDemo()) return
+  write(MODE_KEY, on ? '1' : null)
+  for (const key of PER_ACCOUNT_KEYS) write(key, null)
+}
+
+export function getDeviceId(): string {
+  return idFor(isDemo() ? SAMPLE_KEY : DEVICE_KEY)
+}
+
+/** Has this browser's sample account been loaded with its history yet? */
+export function sampleSeeded(): boolean {
+  return read(SEEDED_KEY) === idFor(SAMPLE_KEY)
+}
+
+export function markSampleSeeded() {
+  write(SEEDED_KEY, idFor(SAMPLE_KEY))
+}
+
+// ?demo=1 opens the sample account, ?demo=0 leaves it.
+const flag = new URLSearchParams(location.search).get('demo')
+if (flag === '1') setDemo(true)
+if (flag === '0') setDemo(false)

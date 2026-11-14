@@ -1,11 +1,7 @@
-"""POST /check: run the rules engine on confirmed stub fields + logged shifts."""
-import uuid
-from datetime import datetime, timezone
-
-from common import config, db
-from common.api import BadRequest, body_of, route
-from common.hashchain import verify_chain
-from rules.engine import StubError, check_pay
+"""POST /check runs the rules engine. GET /history lists hours against pay stubs."""
+from common import checks
+from common.api import BadRequest, body_of, query_of, route
+from rules.engine import StubError
 from shifts.handler import _device
 
 
@@ -15,24 +11,14 @@ def check(event):
     stub = body.get("stub")
     if not isinstance(stub, dict):
         raise BadRequest("Missing pay stub fields.")
-
-    entries = db.store().list_shifts(device_id)
     try:
-        result = check_pay(
-            entries, stub,
-            min_wage=config.AZ_MIN_WAGE,
-            week_start_weekday=config.WORKWEEK_START_WEEKDAY,
-            overtime_threshold=config.OVERTIME_THRESHOLD_HOURS,
-            overtime_multiplier=config.OVERTIME_MULTIPLIER,
-        )
+        return 200, checks.run_check(device_id, stub)
     except StubError as err:
         raise BadRequest(str(err))
 
-    result["log"] = verify_chain(entries)
-    result["checkId"] = uuid.uuid4().hex[:12]
-    result["checkedAt"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
-    db.store().put_check(device_id, result["checkId"], {"stub": {k: str(v) for k, v in stub.items()}, "result": result})
-    return 200, result
+
+def history(event):
+    return 200, checks.history(_device(query_of(event).get("deviceId")))
 
 
-handler = route({"POST /check": check})
+handler = route({"POST /check": check, "GET /history": history})

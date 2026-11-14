@@ -81,6 +81,17 @@ class _LocalStore:
             data["checks"][f"{device_id}/{check_id}"] = record
             self._save(data)
 
+    def list_checks(self, device_id):
+        with self.lock:
+            checks = self._load()["checks"]
+            return [record for key, record in checks.items() if key.startswith(device_id + "/")]
+
+    def delete_checks(self, device_id):
+        with self.lock:
+            data = self._load()
+            data["checks"] = {k: v for k, v in data["checks"].items() if not k.startswith(device_id + "/")}
+            self._save(data)
+
     def put_run(self, run):
         with self.lock:
             data = self._load()
@@ -171,6 +182,24 @@ class _DynamoStore:
 
     def put_check(self, device_id, check_id, record):
         self.checks.put_item(Item={"deviceId": device_id, "checkId": check_id, "data": json.dumps(record)})
+
+    def _check_items(self, device_id):
+        from boto3.dynamodb.conditions import Key
+        items, kwargs = [], {"KeyConditionExpression": Key("deviceId").eq(device_id), "ConsistentRead": True}
+        while True:
+            page = self.checks.query(**kwargs)
+            items.extend(page["Items"])
+            if "LastEvaluatedKey" not in page:
+                return items
+            kwargs["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+
+    def list_checks(self, device_id):
+        return [json.loads(item["data"]) for item in self._check_items(device_id)]
+
+    def delete_checks(self, device_id):
+        with self.checks.batch_writer() as batch:
+            for item in self._check_items(device_id):
+                batch.delete_item(Key={"deviceId": device_id, "checkId": item["checkId"]})
 
     def put_run(self, run):
         self.runs.put_item(Item={"runId": run["runId"], "data": json.dumps(run)})

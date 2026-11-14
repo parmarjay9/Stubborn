@@ -109,6 +109,7 @@ Resources:
       Handler: shifts.handler.handler
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ShiftsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ChecksTable }
       Events:
         Append: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: POST } }
         List: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: GET } }
@@ -138,6 +139,7 @@ Resources:
         - DynamoDBCrudPolicy: { TableName: !Ref ChecksTable }
       Events:
         Check: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /check, Method: POST } }
+        History: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /history, Method: GET } }
 
   LettersFunction:
     Type: AWS::Serverless::Function

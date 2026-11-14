@@ -25,12 +25,15 @@ cd frontend && npm install && cd ..
 # terminal 2: app on http://localhost:5173
 cd frontend && npm run dev
 
-# seed the demo week (43.5 hours) and make the sample stubs
-.venv/bin/python demo/seed_week.py
+# make the sample pay stub images
 .venv/bin/python demo/make_stubs.py
 ```
 
-Open `http://localhost:5173/?demo=1` to use the seeded demo device (`?demo=0` switches back). The demo device also shows the tamper switch on the hours page.
+### The sample account
+
+Tap "Open the sample account" on the home page (or add `?demo=1` to the URL) to browse as Alex Rivera, a made-up warehouse worker. It loads four weeks of hours and three pay stubs that are already checked, so the History page shows hours against pay stubs right away. The newest week (43.5 hours) is left unchecked for the live demo. The sample account also shows the tamper switch on the hours page.
+
+Each browser gets its own copy of the sample data, so visitors cannot change each other's. "Exit" in the yellow bar returns to your own account. The data lives in `backend/src/common/sample.py`.
 
 Without AWS credentials, each cloud feature falls back the same way it does in production: stub fields are typed by hand, letters come from a template, and the agent panel replays the saved run in `demo/fallback/run.json`.
 
@@ -66,7 +69,7 @@ Before the first deploy, request access to a Claude model in the Bedrock console
 |---|---|
 | React + Vite + TypeScript + Tailwind | Mobile-first installable web app. Bottom nav on phones, top nav on wider screens. |
 | API Gateway (HTTP API) + Lambda (Python 3.12) | All endpoints. Defined in `backend/template.yaml` with AWS SAM. |
-| DynamoDB | Shift entries, check results, agent runs. |
+| DynamoDB | Shift entries, check results (these drive the History page), agent runs. |
 | S3 | Pay stub photos, uploaded with a presigned URL and deleted after 7 days. |
 | Amazon Textract | `AnalyzeDocument` with Queries reads the stub. Fields under 80% confidence are highlighted for the worker to check. |
 | Rules engine (`backend/src/rules/engine.py`) | Pure functions, `Decimal` only. Pairs shifts, splits them by workweek, applies overtime and minimum wage, itemizes findings. |

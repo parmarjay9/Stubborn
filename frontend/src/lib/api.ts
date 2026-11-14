@@ -35,6 +35,7 @@ export interface VerifyResult {
   tampered?: boolean
 }
 
+
 export interface StubFields {
   payPeriodStart: string
   payPeriodEnd: string
@@ -84,6 +85,18 @@ export interface CheckResult {
   log: VerifyResult
 }
 
+export interface HistoryPeriod {
+  start: string
+  end: string
+  loggedHours: string
+  check: CheckResult | null
+}
+
+export interface HistoryResult {
+  periods: HistoryPeriod[]
+  summary: { periodsChecked: number; periodsWithGap: number; periodsNotChecked: number; totalOwed: string }
+}
+
 export interface Letters {
   managerMessage: string
   complaintSummary: string
@@ -123,11 +136,12 @@ export const api = {
   listShifts: (deviceId: string) => call<{ entries: Entry[] }>('GET', `/shifts?deviceId=${deviceId}`),
   appendShift: (entry: Entry) => call<{ entry: Entry }>('POST', '/shifts', entry),
   verify: (deviceId: string) => call<VerifyResult>('GET', `/shifts/verify?deviceId=${deviceId}`),
-  demo: (deviceId: string, action: 'tamper' | 'restore') => call<VerifyResult>('POST', '/shifts/demo', { deviceId, action }),
+  demo: (deviceId: string, action: 'tamper' | 'restore' | 'seed') => call<VerifyResult>('POST', '/shifts/demo', { deviceId, action }),
   uploadUrl: (deviceId: string, contentType: string) =>
     call<{ key: string; uploadUrl: string }>('POST', '/stub/upload-url', { deviceId, contentType }),
   extract: (deviceId: string, key: string) => call<ExtractResult>('POST', '/stub/extract', { deviceId, key }),
   check: (deviceId: string, stub: StubFields) => call<CheckResult>('POST', '/check', { deviceId, stub }),
+  history: (deviceId: string) => call<HistoryResult>('GET', `/history?deviceId=${deviceId}`),
   letters: (check: CheckResult, worker: Worker) => call<Letters>('POST', '/letters', { check, worker }),
   agentStart: (deviceId: string, claim: Claim) => call<{ runId: string }>('POST', '/agent/start', { deviceId, claim }),
   agentStatus: (runId: string) => call<AgentRun>('GET', `/agent/status/${runId}`),
