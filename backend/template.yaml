@@ -1,0 +1,199 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Stubborn. Your hours. Your proof. Your pay. (sunhacks 2026)
+
+Parameters:
+  FrontendUrl:
+    Type: String
+    Default: ""
+    Description: Public https URL of the deployed frontend (Amplify or custom domain). The agent opens the demo claim form there.
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-opus-5-5
+    Description: Claude model ID on Bedrock. Confirm it in the Bedrock console and request model access first.
+  TinyFishKeyParam:
+    Type: String
+    Default: /stubborn/tinyfish-api-key
+    Description: Name of the SSM SecureString parameter that holds the TinyFish API key.
+  DemoMode:
+    Type: String
+    Default: "1"
+    AllowedValues: ["0", "1"]
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures: [arm64]
+    CodeUri: src/
+    MemorySize: 512
+    Timeout: 25
+    Environment:
+      Variables:
+        SHIFTS_TABLE: !Ref ShiftsTable
+        CHECKS_TABLE: !Ref ChecksTable
+        RUNS_TABLE: !Ref RunsTable
+        STUB_BUCKET: !Ref StubBucket
+        FRONTEND_URL: !Ref FrontendUrl
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        TINYFISH_KEY_PARAM: !Ref TinyFishKeyParam
+        DEMO_MODE: !Ref DemoMode
+
+Resources:
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: [GET, POST, OPTIONS]
+        AllowHeaders: [Content-Type]
+
+  ShiftsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: deviceId, AttributeType: S }
+        - { AttributeName: seq, AttributeType: N }
+      KeySchema:
+        - { AttributeName: deviceId, KeyType: HASH }
+        - { AttributeName: seq, KeyType: RANGE }
+
+  ChecksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: deviceId, AttributeType: S }
+        - { AttributeName: checkId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: deviceId, KeyType: HASH }
+        - { AttributeName: checkId, KeyType: RANGE }
+
+  RunsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: runId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: runId, KeyType: HASH }
+
+  StubBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - { Id: expire-stubs, Status: Enabled, ExpirationInDays: 7 }
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins: ["*"]
+            AllowedMethods: [PUT]
+            AllowedHeaders: ["*"]
+            MaxAge: 300
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: health.handler
+      Events:
+        Health: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /health, Method: GET } }
+
+  ShiftsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: shifts.handler.handler
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref ShiftsTable }
+      Events:
+        Append: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: POST } }
+        List: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: GET } }
+        Verify: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts/verify, Method: GET } }
+        Demo: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts/demo, Method: POST } }
+
+  StubFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: stub.handler.handler
+      Policies:
+        - S3CrudPolicy: { BucketName: !Ref StubBucket }
+        - Statement:
+            - Effect: Allow
+              Action: textract:AnalyzeDocument
+              Resource: "*"
+      Events:
+        UploadUrl: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /stub/upload-url, Method: POST } }
+        Extract: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /stub/extract, Method: POST } }
+
+  CheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: check.handler.handler
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ShiftsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref ChecksTable }
+      Events:
+        Check: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /check, Method: POST } }
+
+  LettersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: letters.handler.handler
+      Timeout: 28
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+                - bedrock-mantle:*
+              Resource: "*"
+      Events:
+        Letters: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /letters, Method: POST } }
+
+  AgentStartFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: agent.start.handler
+      Environment:
+        Variables:
+          WORKER_FUNCTION: !Ref AgentWorkerFunction
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref RunsTable }
+        - LambdaInvokePolicy: { FunctionName: !Ref AgentWorkerFunction }
+      Events:
+        Start: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /agent/start, Method: POST } }
+
+  AgentWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: agent.worker.handler
+      Timeout: 150
+      EventInvokeConfig:
+        MaximumRetryAttempts: 0
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref RunsTable }
+        - Statement:
+            - Effect: Allow
+              Action: ssm:GetParameter
+              Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${TinyFishKeyParam}
+
+  AgentStatusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: agent.status.handler
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref RunsTable }
+      Events:
+        Status: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: "/agent/status/{runId}", Method: GET } }
+
+Outputs:
+  ApiUrl:
+    Description: Set this as VITE_API_URL for the frontend
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com
+  StubBucketName:
+    Value: !Ref StubBucket

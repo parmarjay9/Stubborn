@@ -1,0 +1,13 @@
+{
+  "source": "sample",
+  "note": "Scripted sample steps, NOT a recording. Replace with the steps from one real TinyFish run (GET /agent/status/{runId}) and set source to \"recorded\" before the demo.",
+  "steps": [
+    { "step": 1, "message": "Opening the wage claim form...", "delayMs": 900 },
+    { "step": 2, "message": "Filling in your name and contact details...", "delayMs": 1800 },
+    { "step": 3, "message": "Filling employer details...", "delayMs": 1700 },
+    { "step": 4, "message": "Entering the pay period and hourly rate...", "delayMs": 1600 },
+    { "step": 5, "message": "Adding hours evidence from your log...", "delayMs": 1900 },
+    { "step": 6, "message": "Writing the claim description...", "delayMs": 2000 },
+    { "step": 7, "message": "Stopped before submit for your review", "delayMs": 1200 }
+  ]
+}
