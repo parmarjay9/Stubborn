@@ -56,11 +56,17 @@ def allowed_amounts(check):
 
 def only_engine_numbers(letters, check):
     text = letters.get("managerMessage", "") + " " + letters.get("complaintSummary", "")
-    return bool(text.strip()) and "—" not in text and _amounts(text) <= allowed_amounts(check)
+    return bool(text.strip()) and chr(8212) not in text and _amounts(text) <= allowed_amounts(check)
 
 
 def _money(value):
     return "${:,.2f}".format(Decimal(str(value)))
+
+
+def _date(iso):
+    from datetime import date
+    day = date.fromisoformat(iso)
+    return f"{day.strftime('%b')} {day.day}, {day.year}"
 
 
 def _hours(value):
@@ -74,7 +80,7 @@ def template_letters(check, worker):
     name = worker.get("name") or "[your name]"
     employer = worker.get("employer") or "the employer"
     manager = worker.get("managerName") or "there"
-    owed, span = _money(totals["owed"]), f"{period['start']} to {period['end']}"
+    owed, span = _money(totals["owed"]), f"{_date(period['start'])} to {_date(period['end'])}"
     logged, paid = _hours(totals["loggedHours"]), _hours(totals["paidHours"])
     details = " ".join(f["label"] + "." for f in check.get("findings", []) if f["code"] not in ("total", "ok"))
     return {

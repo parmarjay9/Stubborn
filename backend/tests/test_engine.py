@@ -164,6 +164,6 @@ def test_bad_stub_fields_raise_a_clear_error():
 def test_no_floats_and_no_em_dashes_in_output():
     result = run(make_entries(DEMO_WEEK), stub(regularHoursPaid="38.00", grossPay="646.00"))
     text = repr(result)
-    assert "—" not in text
+    assert chr(8212) not in text
     for value in result["totals"].values():
         assert isinstance(value, str)

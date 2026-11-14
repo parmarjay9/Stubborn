@@ -1,0 +1,32 @@
+import type { Finding } from '../lib/api'
+import { money } from '../lib/format'
+
+/** Every line and number here comes straight from the rules engine. */
+export default function Breakdown({ findings }: { findings: Finding[] }) {
+  return (
+    <section className="card p-0">
+      <h2 className="border-b border-line px-5 py-4 font-bold">How we got there</h2>
+      <ul className="divide-y divide-line">
+        {findings.map((finding) => (
+          <li key={finding.code}>
+            <details className="group px-5 py-4">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-3 [&::-webkit-details-marker]:hidden">
+                <span className={finding.code === 'total' ? 'font-bold' : 'font-medium'}>{finding.label}</span>
+                <span className="flex shrink-0 items-center gap-2">
+                  {finding.amount && finding.code !== 'total' && (
+                    <span className="font-semibold tabular-nums">{money(finding.amount)}</span>
+                  )}
+                  <svg viewBox="0 0 24 24" className="h-5 w-5 text-muted transition group-open:rotate-180" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </span>
+              </summary>
+              <p className="mt-2 rounded-xl bg-paper px-3 py-2 text-sm tabular-nums text-muted">{finding.math}</p>
+            </details>
+          </li>
+        ))}
+      </ul>
+      <p className="border-t border-line px-5 py-3 text-xs text-muted">Tap a line to see the math.</p>
+    </section>
+  )
+}
