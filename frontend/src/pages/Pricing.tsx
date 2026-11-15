@@ -4,70 +4,35 @@ import { t } from '../lib/i18n'
 
 // Planned pricing. Payments are not switched on: this page shows the model,
 // and every feature stays unlocked during the hackathon.
+// The three plans sit side by side on every screen size, as a comparison table.
 
 const PLAN_KEY = 'stubborn.planInterest'
 
-interface Plan {
-  id: 'free' | 'plus' | 'partners'
-  name: string
-  price: string
-  per: string
-  pitch: string
-  features: string[]
-  cta: string
-  highlight?: boolean
-}
+type PlanId = 'free' | 'plus' | 'partners'
 
-const PLANS: Plan[] = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    per: 'forever',
-    pitch: 'Your own record of your hours should never cost money.',
-    features: [
-      'Unlimited clock in and clock out',
-      'Tamper-evident log with a nightly locked seal',
-      'Works without signal',
-      '2 pay stub checks a month',
-      'Hours vs pay stubs history',
-      'A ready-made note to your manager',
-      'English and Spanish',
-    ],
-    cta: 'Start free',
-  },
-  {
-    id: 'plus',
-    name: 'Plus',
-    price: '$3',
-    per: 'a month',
-    pitch: 'For when something is off and you want backup.',
-    features: [
-      'Everything in Free',
-      'Unlimited pay stub checks',
-      'Notes and claim summaries written for you by AI, in English or Spanish',
-      'Evidence packets with a QR code anyone can verify',
-      'A web agent that fills in the wage claim form for you',
-      'Cancel any time. Your log stays yours either way.',
-    ],
-    cta: 'Tell me when Plus opens',
-    highlight: true,
-  },
-  {
-    id: 'partners',
-    name: 'Partners',
-    price: 'Custom',
-    per: 'per organization',
-    pitch: 'For unions, worker centers and legal aid clinics.',
-    features: [
-      'Plus for every member, paid by the organization',
-      'A dashboard of open pay gaps across members, shared only with consent',
-      'Evidence packets ready for intake and case files',
-      'Rule packs for more states',
-      'Onboarding and support',
-    ],
-    cta: 'Talk to us',
-  },
+const PLANS: { id: PlanId; name: string; price: string; per: string; pitch: string }[] = [
+  { id: 'free', name: 'Free', price: '$0', per: 'forever', pitch: 'Your own record of your hours should never cost money.' },
+  { id: 'plus', name: 'Plus', price: '$3', per: 'a month', pitch: 'For when something is off and you want backup.' },
+  { id: 'partners', name: 'Partners', price: 'Custom', per: 'per organization', pitch: 'For unions, worker centers and legal aid clinics.' },
+]
+
+// true = included, false = not included, string = included with this limit
+type Cell = boolean | string
+
+const ROWS: { feature: string; cells: [Cell, Cell, Cell] }[] = [
+  { feature: 'Clock in and out', cells: ['Unlimited', 'Unlimited', 'Unlimited'] },
+  { feature: 'Tamper-evident log and nightly seal', cells: [true, true, true] },
+  { feature: 'Works without signal', cells: [true, true, true] },
+  { feature: 'Hours vs pay stubs history', cells: [true, true, true] },
+  { feature: 'English and Spanish', cells: [true, true, true] },
+  { feature: 'Pay stub checks', cells: ['2 a month', 'Unlimited', 'Unlimited'] },
+  { feature: 'Note to your manager', cells: ['Template', 'AI-written', 'AI-written'] },
+  { feature: 'Evidence packets with a QR code', cells: [false, true, true] },
+  { feature: 'Claim form agent', cells: [false, true, true] },
+  { feature: 'Dashboard of members’ pay gaps, with consent', cells: [false, false, true] },
+  { feature: 'Rule packs for more states', cells: [false, false, true] },
+  { feature: 'Onboarding and support', cells: [false, false, true] },
+  { feature: 'Who pays', cells: ['Nobody', 'The worker', 'The organization'] },
 ]
 
 const WHY = [
@@ -76,6 +41,27 @@ const WHY = [
   ['Organizations can pay so workers do not have to.', 'A union or clinic buys seats, and its members get Plus at no cost.'],
   ['It runs on pay-per-use cloud services.', 'No servers sit idle. Costs rise only when people use it, so it can grow from one worker to many.'],
 ]
+
+/** Background that marks the Plus column all the way down. */
+const colBg = (index: number) => (index === 1 ? 'bg-hi-soft' : '')
+
+function CellView({ value }: { value: Cell }) {
+  if (value === true) {
+    return (
+      <svg viewBox="0 0 24 24" className="mx-auto h-5 w-5 text-accent" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" role="img" aria-label={t('Included')}>
+        <path d="M5 12.5l4.5 4.5L19 7.5" />
+      </svg>
+    )
+  }
+  if (value === false) {
+    return (
+      <span className="block text-center text-lg leading-none text-ink/30" role="img" aria-label={t('Not included')}>
+        –
+      </span>
+    )
+  }
+  return <span className="block text-center text-xs font-bold leading-tight sm:text-sm">{t(value)}</span>
+}
 
 export default function Pricing() {
   const [interest, setInterest] = useState<string | null>(() => {
@@ -86,13 +72,36 @@ export default function Pricing() {
     }
   })
 
-  const choose = (id: string) => {
+  const choose = (id: PlanId) => {
     setInterest(id)
     try {
       localStorage.setItem(PLAN_KEY, id)
     } catch {
       // the choice just will not be remembered
     }
+  }
+
+  const cta = (id: PlanId) => {
+    const base = 'btn !min-h-11 !rounded-lg !px-1 !text-sm !shadow-hard-sm sm:!text-base'
+    if (id === 'free') {
+      return (
+        <Link to="/log" className={`${base} btn-secondary`}>
+          {t('Start free')}
+        </Link>
+      )
+    }
+    if (interest === id) {
+      return (
+        <p role="status" className="rounded-lg border-2 border-accent bg-accent-soft px-1 py-2 text-center text-xs font-bold text-accent-dark">
+          {t('Noted')}
+        </p>
+      )
+    }
+    return (
+      <button type="button" className={`${base} ${id === 'plus' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => choose(id)}>
+        {id === 'plus' ? t('Notify me') : t('Talk to us')}
+      </button>
+    )
   }
 
   return (
@@ -107,46 +116,47 @@ export default function Pricing() {
         {t('Preview of planned pricing. Payments are not switched on, and everything is unlocked during sunhacks 2026.')}
       </p>
 
-      <ul className="grid gap-5">
-        {PLANS.map((plan) => (
-          <li key={plan.id} className={`card grid gap-4 ${plan.highlight ? 'bg-hi-soft' : ''}`}>
-            <div className="flex items-start justify-between gap-3">
+      <section className="card overflow-hidden p-0" aria-label={t('Compare plans')}>
+        {/* Plan headers: always three across */}
+        <div className="grid grid-cols-3 border-b-2 border-ink">
+          {PLANS.map((plan, index) => (
+            <div key={plan.id} className={`grid min-w-0 content-between gap-3 px-2 py-4 text-center sm:px-4 ${colBg(index)} ${index > 0 ? 'border-l-2 border-ink/15' : ''}`}>
               <div>
-                <h2 className="text-2xl font-extrabold">{t(plan.name)}</h2>
-                <p className="mt-0.5 text-sm text-muted">{t(plan.pitch)}</p>
+                {plan.id === 'plus' && <p className="tag mb-1 text-[0.6rem] text-ink sm:text-xs">{t('Most help')}</p>}
+                <h2 className="hyphens-auto break-words text-lg font-extrabold leading-tight sm:text-2xl">{t(plan.name)}</h2>
+                <p className="mt-2 leading-none">
+                  <span className={`hl font-display font-extrabold ${plan.price === 'Custom' ? 'text-base min-[360px]:text-xl sm:text-3xl' : 'text-3xl sm:text-5xl'}`}>{t(plan.price)}</span>
+                </p>
+                <p className="mt-1.5 text-[0.7rem] font-semibold leading-tight text-muted sm:text-sm">{t(plan.per)}</p>
+                <p className="mt-2 hidden text-sm leading-snug text-muted sm:block">{t(plan.pitch)}</p>
               </div>
-              {plan.highlight && <span className="stamp shrink-0 border-ink text-ink">{t('Most help')}</span>}
+              {cta(plan.id)}
             </div>
-            <p className="leading-none">
-              <span className="hl font-display text-5xl font-extrabold">{t(plan.price)}</span>{' '}
-              <span className="text-sm font-semibold text-muted">{t(plan.per)}</span>
-            </p>
-            <ul className="grid gap-2 text-[0.95rem]">
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex gap-2">
-                  <svg viewBox="0 0 24 24" className="mt-1 h-4 w-4 shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12.5l4.5 4.5L19 7.5" />
-                  </svg>
-                  <span>{t(feature)}</span>
-                </li>
-              ))}
-            </ul>
-            {plan.id === 'free' ? (
-              <Link to="/log" className="btn btn-secondary">
-                {t(plan.cta)}
-              </Link>
-            ) : interest === plan.id ? (
-              <p role="status" className="rounded-xl border-2 border-accent bg-accent-soft px-4 py-3 text-sm font-semibold text-accent-dark">
-                {t('Noted on this phone. Nothing was charged and no account was made.')}
-              </p>
-            ) : (
-              <button type="button" className={`btn ${plan.highlight ? 'btn-primary' : 'btn-secondary'}`} onClick={() => choose(plan.id)}>
-                {t(plan.cta)}
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+
+        {/* Feature rows: label across the top, then one cell per plan */}
+        <ul>
+          {ROWS.map((row, rowIndex) => (
+            <li key={row.feature} className={rowIndex > 0 ? 'border-t-2 border-dashed border-ink/15' : ''}>
+              <p className="px-3 pt-2.5 text-[0.8rem] font-semibold text-muted sm:px-4 sm:text-sm">{t(row.feature)}</p>
+              <div className="grid grid-cols-3">
+                {row.cells.map((cell, index) => (
+                  <div key={index} className={`flex min-h-10 items-center justify-center px-1 pb-2.5 pt-1.5 ${colBg(index)} ${index > 0 ? 'border-l-2 border-ink/15' : ''}`}>
+                    <CellView value={cell} />
+                  </div>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {interest && interest !== 'free' && (
+        <p role="status" className="rounded-xl border-2 border-accent bg-accent-soft px-4 py-3 text-sm font-semibold text-accent-dark">
+          {t('Noted on this phone. Nothing was charged and no account was made.')}
+        </p>
+      )}
 
       <section>
         <p className="tag text-muted">{t('Why it is priced this way')}</p>
