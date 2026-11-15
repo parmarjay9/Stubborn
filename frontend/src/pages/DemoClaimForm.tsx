@@ -108,7 +108,11 @@ export default function DemoClaimForm() {
         <footer className="mt-10 border-t border-line pt-5 text-center text-sm text-muted">
           {t('Demo page built by')}{' '}
           <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">Jay Parmar</a>{' '}
-          {t('at')} sunhacks 2026. {t('Not affiliated with any government agency.')}
+          {t('at')}{' '}
+          <a href="https://sunhacks.io" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">
+            sunhacks 2026
+          </a>
+          . {t('Not affiliated with any government agency.')}
         </footer>
       </main>
     </div>

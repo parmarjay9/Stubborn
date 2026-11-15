@@ -212,7 +212,12 @@ export default function Home() {
   return (
     <div className="pop grid gap-10">
       <section>
-        <p className="tag text-muted">{t('A sunhacks 2026 project')}</p>
+        <p className="tag text-muted">
+          {t('A project built at')}{' '}
+          <a href="https://sunhacks.io" target="_blank" rel="noopener noreferrer" className="text-ink underline decoration-hi decoration-4 underline-offset-2">
+            sunhacks 2026
+          </a>
+        </p>
         <h1 className="mt-3 text-[3.1rem] font-extrabold leading-[0.98]">
           {t('Your hours.')}
           <br />

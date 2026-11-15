@@ -106,7 +106,8 @@ export default function Log() {
         </Link>
       )}
 
-      {isDemo() && (
+      {/* Stage demo only: shown in the sample account when the address has ?tamper=1 */}
+      {isDemo() && new URLSearchParams(location.search).has('tamper') && (
         <label className="flex items-center justify-between gap-4 rounded-xl border-2 border-dashed border-warn bg-warn-soft px-4 py-3 text-sm">
           <span>
             <span className="block font-bold text-warn">{t('Try it: secretly change a saved clock-out time')}</span>
@@ -119,7 +120,7 @@ export default function Log() {
       )}
 
       <p className="text-xs leading-relaxed text-muted">
-        {t('The chain shows the log was not edited after the fact. It does not prove you were working. Server receipt times and location stamps make it harder to fake. Automatic clock-in by location needs a native app and is planned for later.')}
+        {t('Your log shows it was never changed after the fact. It cannot prove you were at work, but the time and place on each tap make it hard to fake.')}
       </p>
     </div>
   )

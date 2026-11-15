@@ -29,7 +29,7 @@ export function Footer() {
       </p>
       <p className="mt-2">{t('Stubborn flags possible underpayment. It is not legal advice.')}</p>
       <p className="mt-1">
-        {t('Built by')} <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> {t('at')} <span className="font-bold text-ink">sunhacks 2026</span>, ASU Tempe.
+        {t('Built by')} <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> {t('at')} <a href="https://sunhacks.io" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">sunhacks 2026</a>, ASU Tempe.
       </p>
     </footer>
   )
@@ -74,7 +74,7 @@ export default function Shell({ children }: { children: ReactNode }) {
             </NavLink>
           </nav>
           <div className="flex items-center gap-2">
-            <span className="tag hidden rounded border-2 border-ink px-1.5 py-0.5 min-[400px]:inline md:hidden">sunhacks 2026</span>
+            <a href="https://sunhacks.io" target="_blank" rel="noopener noreferrer" className="tag hidden rounded border-2 border-ink px-1.5 py-0.5 min-[400px]:inline md:hidden">sunhacks 2026</a>
             <LangSwitch />
           </div>
         </div>

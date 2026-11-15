@@ -45,7 +45,7 @@ cd frontend && npm run dev
 
 ### The sample account
 
-Tap "Open the sample account" on the home page (or add `?demo=1` to the URL) to browse as Alex Rivera, a made-up warehouse worker. It loads four weeks of hours and three pay stubs that are already checked, so the History page shows hours against pay stubs right away. The newest week (43.5 hours) is left unchecked for the live demo. The sample account also shows the tamper switch on the hours page.
+Tap "Open the sample account" on the home page (or add `?demo=1` to the URL) to browse as Alex Rivera, a made-up warehouse worker. It loads four weeks of hours and three pay stubs that are already checked, so the History page shows hours against pay stubs right away. The newest week (43.5 hours) is left unchecked for the live demo. For the stage demo, open `/log?tamper=1` in the sample account to show a switch that secretly edits one saved entry, so the log's badge turns red. It is hidden otherwise to keep the page simple.
 
 Each browser gets its own copy of the sample data, so visitors cannot change each other's. "Exit" in the yellow bar returns to your own account. The data lives in `backend/src/common/sample.py`.
 

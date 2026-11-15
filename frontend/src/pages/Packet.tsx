@@ -250,7 +250,11 @@ export default function Packet() {
             <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">
               Jay Parmar
             </a>{' '}
-            {t('at')} sunhacks 2026.
+            {t('at')}{' '}
+            <a href="https://sunhacks.io" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">
+              sunhacks 2026
+            </a>
+            .
           </p>
         </footer>
       </main>

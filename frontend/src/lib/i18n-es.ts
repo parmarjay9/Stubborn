@@ -618,3 +618,10 @@ Object.assign(ES, {
     'Marcar entrada, su registro de horas y las revisiones básicas de pago son gratis para siempre. Plus cuesta $3 al mes por revisiones sin límite, cartas escritas para usted, paquetes de pruebas y ayuda para llenar el formulario de reclamo. Los sindicatos y centros de trabajadores pueden pagarlo por sus miembros.',
   'Tap to see it bigger': 'Toque para verlo más grande',
 })
+
+// sunhacks link and shorter hours-page note
+Object.assign(ES, {
+  'A project built at': 'Un proyecto hecho en',
+  'Your log shows it was never changed after the fact. It cannot prove you were at work, but the time and place on each tap make it hard to fake.':
+    'Su registro muestra que nunca se cambió después. No puede probar que usted estaba en el trabajo, pero la hora y el lugar de cada toque lo hacen difícil de falsificar.',
+})
