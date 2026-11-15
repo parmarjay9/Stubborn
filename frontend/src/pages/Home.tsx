@@ -257,7 +257,7 @@ export default function Home() {
             className="btn btn-secondary mt-4"
             onClick={() => {
               setDemo(true)
-              location.assign('/history')
+              location.assign('/')
             }}
           >
             {t('Open the sample account')}
@@ -341,7 +341,7 @@ export default function Home() {
         <p className="tag text-muted">{t('Pricing')}</p>
         <h2 className="text-2xl font-extrabold">{t('Free to keep your record. Small price for backup.')}</h2>
         <p className="text-[0.95rem] leading-snug text-muted">
-          {t('Clocking in, the tamper-evident log and basic pay checks are free for good. Plus is $3 a month for unlimited checks, AI-written notes, evidence packets and the claim form agent. Unions and clinics can cover it for their members.')}
+          {t('Clocking in, your hours log and basic pay checks are free for good. Plus is $3 a month for unlimited checks, letters written for you, evidence packets and help filling in the claim form. Unions and worker centers can pay for it for their members.')}
         </p>
         <Link to="/pricing" className="btn btn-secondary">
           {t('See pricing')}

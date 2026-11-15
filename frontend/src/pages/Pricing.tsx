@@ -20,7 +20,7 @@ type Cell = boolean | string
 
 const ROWS: { feature: string; cells: [Cell, Cell, Cell] }[] = [
   { feature: 'Clock in and out', cells: ['Unlimited', 'Unlimited', 'Unlimited'] },
-  { feature: 'Tamper-evident log and nightly seal', cells: [true, true, true] },
+  { feature: 'An hours log nobody can secretly change', cells: [true, true, true] },
   { feature: 'Works without signal', cells: [true, true, true] },
   { feature: 'Hours vs pay stubs history', cells: [true, true, true] },
   { feature: 'English and Spanish', cells: [true, true, true] },
@@ -29,16 +29,16 @@ const ROWS: { feature: string; cells: [Cell, Cell, Cell] }[] = [
   { feature: 'Evidence packets with a QR code', cells: [false, true, true] },
   { feature: 'Claim form agent', cells: [false, true, true] },
   { feature: 'Dashboard of members’ pay gaps, with consent', cells: [false, false, true] },
-  { feature: 'Rule packs for more states', cells: [false, false, true] },
+  { feature: 'Support for more states', cells: [false, false, true] },
   { feature: 'Onboarding and support', cells: [false, false, true] },
   { feature: 'Who pays', cells: ['Nobody', 'The worker', 'The organization'] },
 ]
 
 const WHY = [
-  ['Workers never pay to keep their own records.', 'The log, the seal and basic checks are free for good.'],
-  ['The paid parts are the ones that cost us money to run.', 'Reading photos, AI writing and the web agent are billed to us per use, so Plus covers them.'],
-  ['Organizations can pay so workers do not have to.', 'A union or clinic buys seats, and its members get Plus at no cost.'],
-  ['It runs on pay-per-use cloud services.', 'No servers sit idle. Costs rise only when people use it, so it can grow from one worker to many.'],
+  ['Keeping your own hours is always free.', 'Clocking in, your hours log and basic pay checks cost nothing, now or later.'],
+  ['You only pay for the extras.', 'Reading your stub photo, writing letters for you and filling in forms cost us a little each time. Plus covers that.'],
+  ['Groups can pay for their members.', 'A union or worker center can buy Plus for its members, so the workers pay nothing.'],
+  ['Our costs only grow when people use it.', 'We do not pay for anything sitting unused, so Stubborn can go from one worker to thousands without raising prices.'],
 ]
 
 /** Background that marks the Plus column all the way down. */
@@ -154,7 +154,7 @@ export default function Pricing() {
 
       <section>
         <p className="tag text-muted">{t('Why it is priced this way')}</p>
-        <h2 className="mt-1 text-3xl font-extrabold">{t('Built to grow without charging the people it helps')}</h2>
+        <h2 className="mt-1 text-3xl font-extrabold">{t('Fair to workers, and ready to grow')}</h2>
         <ul className="mt-4 grid gap-2">
           {WHY.map(([head, body]) => (
             <li key={head} className="rounded-xl border-2 border-ink/20 bg-card/70 px-4 py-3 text-[0.95rem] leading-snug">

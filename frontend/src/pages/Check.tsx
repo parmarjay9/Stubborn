@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ConfirmFields from '../components/ConfirmFields'
+import ImagePopup from '../components/ImagePopup'
 import StepTrail from '../components/StepTrail'
 import StubUpload, { prepareImage } from '../components/StubUpload'
 import { api, uploadStub, type StubFieldName, type StubFields } from '../lib/api'
@@ -27,6 +28,7 @@ export default function Check() {
   const [notice, setNotice] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [checking, setChecking] = useState(false)
+  const [zoom, setZoom] = useState(false)
 
   async function read(file: File) {
     setStage('reading')
@@ -97,7 +99,17 @@ export default function Check() {
               <p className="tag text-muted">{t('Sample account')}</p>
               <h2 className="mt-1 text-xl font-extrabold">{t("{name}'s pay stub for Nov 8 to Nov 14", { name: SAMPLE_WORKER.name })}</h2>
               <div className="mt-3 flex items-start gap-4">
-                <img src="/sample-stub.png" alt={t('Sample pay stub')} className="w-28 shrink-0 rounded border-2 border-ink bg-white" />
+                <button
+                  type="button"
+                  onClick={() => setZoom(true)}
+                  className="group relative w-28 shrink-0 overflow-hidden rounded border-2 border-ink bg-white"
+                  aria-label={t('Tap to see it bigger')}
+                >
+                  <img src="/sample-stub.png" alt={t('Sample pay stub')} className="block w-full" />
+                  <span className="absolute inset-x-0 bottom-0 bg-ink/80 py-0.5 text-center text-[0.65rem] font-bold text-hi">
+                    {t('Tap to see it bigger')}
+                  </span>
+                </button>
                 <p className="text-sm leading-snug text-muted">
                   {t('This is the stub for the one week that has not been checked yet. Use it to see the whole check, the same as if you had photographed it.')}
                 </p>
@@ -107,6 +119,7 @@ export default function Check() {
               </button>
             </section>
           )}
+          {zoom && <ImagePopup src="/sample-stub.png" alt={t('Sample pay stub')} onClose={() => setZoom(false)} />}
           <StubUpload
             onPick={read}
             onManual={() => {

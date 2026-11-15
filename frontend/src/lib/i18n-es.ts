@@ -522,7 +522,6 @@ Object.assign(ES, {
   'Onboarding and support': 'Capacitación y soporte',
   'Talk to us': 'Contáctenos',
   'Most help': 'Más ayuda',
-  'Noted on this phone. Nothing was charged and no account was made.': 'Anotado en este teléfono. No se cobró nada y no se creó ninguna cuenta.',
   'Why it is priced this way': 'Por qué tiene este precio',
   'Built to grow without charging the people it helps': 'Hecho para crecer sin cobrarle a quienes ayuda',
   'Workers never pay to keep their own records.': 'Los trabajadores nunca pagan por llevar sus propios registros.',
@@ -548,7 +547,6 @@ Object.assign(ES, {
   'Compare plans': 'Comparar planes',
   Included: 'Incluido',
   'Not included': 'No incluido',
-  Noted: 'Anotado',
   'Notify me': 'Avíseme',
   'Clock in and out': 'Marcar entrada y salida',
   Unlimited: 'Sin límite',
@@ -597,4 +595,26 @@ Object.assign(ES, {
     'Solo usamos su correo para esto. Nunca lo vendemos, y Stubborn nunca pide datos de tarjeta en esta página.',
   'On the list': 'En la lista',
   'We will be in touch': 'Le escribiremos',
+})
+
+// Plain-language pricing copy
+Object.assign(ES, {
+  'Keeping your own hours is always free.': 'Llevar sus propias horas siempre es gratis.',
+  'Clocking in, your hours log and basic pay checks cost nothing, now or later.':
+    'Marcar entrada, su registro de horas y las revisiones básicas de pago no cuestan nada, ni ahora ni después.',
+  'You only pay for the extras.': 'Solo paga por los extras.',
+  'Reading your stub photo, writing letters for you and filling in forms cost us a little each time. Plus covers that.':
+    'Leer la foto de su talón, escribirle cartas y llenar formularios nos cuesta un poco cada vez. Plus cubre eso.',
+  'Groups can pay for their members.': 'Los grupos pueden pagar por sus miembros.',
+  'A union or worker center can buy Plus for its members, so the workers pay nothing.':
+    'Un sindicato o centro de trabajadores puede comprar Plus para sus miembros, así los trabajadores no pagan nada.',
+  'Our costs only grow when people use it.': 'Nuestros costos solo crecen cuando la gente lo usa.',
+  'We do not pay for anything sitting unused, so Stubborn can go from one worker to thousands without raising prices.':
+    'No pagamos por nada que esté sin usar, así que Stubborn puede pasar de un trabajador a miles sin subir los precios.',
+  'Fair to workers, and ready to grow': 'Justo con los trabajadores y listo para crecer',
+  'An hours log nobody can secretly change': 'Un registro de horas que nadie puede cambiar a escondidas',
+  'Support for more states': 'Más estados',
+  'Clocking in, your hours log and basic pay checks are free for good. Plus is $3 a month for unlimited checks, letters written for you, evidence packets and help filling in the claim form. Unions and worker centers can pay for it for their members.':
+    'Marcar entrada, su registro de horas y las revisiones básicas de pago son gratis para siempre. Plus cuesta $3 al mes por revisiones sin límite, cartas escritas para usted, paquetes de pruebas y ayuda para llenar el formulario de reclamo. Los sindicatos y centros de trabajadores pueden pagarlo por sus miembros.',
+  'Tap to see it bigger': 'Toque para verlo más grande',
 })
