@@ -63,3 +63,15 @@ def test_seeding_twice_starts_clean(local_store):
     sample.seed(DEVICE)
     assert len(local_store.list_shifts(DEVICE)) == 40
     assert checks.history(DEVICE)["summary"]["periodsChecked"] == 3
+
+
+def test_usage_counts_this_months_checks_in_arizona_time(local_store):
+    from datetime import datetime, timezone
+    from common import checks, sample
+
+    sample.seed(DEVICE)
+    # Sample checks are dated Oct 25, Nov 1 and Nov 8, 2026 (UTC evening).
+    mid_nov = datetime(2026, 11, 15, 12, 0, tzinfo=timezone.utc)
+    assert checks.usage(DEVICE, now=mid_nov) == {"month": "2026-11", "checksUsed": 2, "freeChecks": 2, "enforced": False}
+    assert checks.usage(DEVICE, now=datetime(2026, 10, 30, tzinfo=timezone.utc))["checksUsed"] == 1
+    assert checks.usage(DEVICE, now=datetime(2026, 12, 2, tzinfo=timezone.utc))["checksUsed"] == 0

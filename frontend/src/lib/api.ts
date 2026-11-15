@@ -123,6 +123,13 @@ export interface SharedPacket {
   seal: Seal | null
 }
 
+export interface Usage {
+  month: string
+  checksUsed: number
+  freeChecks: number
+  enforced: boolean
+}
+
 export interface Letters {
   managerMessage: string
   complaintSummary: string
@@ -172,6 +179,7 @@ export const api = {
   readShare: (shareId: string) => call<SharedPacket>('GET', `/share/${encodeURIComponent(shareId)}`),
   joinWaitlist: (entry: { email: string; plan: 'plus' | 'partners'; lang: 'en' | 'es'; organization: string }) =>
     call<{ ok: boolean }>('POST', '/waitlist', entry),
+  usage: (deviceId: string) => call<Usage>('GET', `/usage?deviceId=${deviceId}`),
   history: (deviceId: string) => call<HistoryResult>('GET', `/history?deviceId=${deviceId}`),
   letters: (check: CheckResult, worker: Worker, lang: 'en' | 'es' = 'en') => call<Letters>('POST', '/letters', { check, worker, lang }),
   agentStart: (deviceId: string, claim: Claim) => call<{ runId: string }>('POST', '/agent/start', { deviceId, claim }),

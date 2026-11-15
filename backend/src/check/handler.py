@@ -19,10 +19,16 @@ def check(event):
         raise BadRequest(str(err))
 
 
+def usage(event):
+    device_id = _device(query_of(event).get("deviceId"))
+    require_device(event, device_id)
+    return 200, checks.usage(device_id)
+
+
 def history(event):
     device_id = _device(query_of(event).get("deviceId"))
     require_device(event, device_id)
     return 200, checks.history(device_id)
 
 
-handler = route({"POST /check": check, "GET /history": history})
+handler = route({"POST /check": check, "GET /history": history, "GET /usage": usage})

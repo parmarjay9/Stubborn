@@ -634,3 +634,15 @@ Object.assign(ES, {
   'Rewritten after it was sealed.': 'Reescrito después de sellarse.',
   'This log no longer matches the copy that was locked away on {when}.': 'Este registro ya no coincide con la copia que se guardó bajo llave el {when}.',
 })
+
+// Free plan usage meter
+Object.assign(ES, {
+  'Free plan usage': 'Uso del plan gratis',
+  'Free plan': 'Plan gratis',
+  '{used} of {free} pay stub checks used this month': '{used} de {free} revisiones de talón usadas este mes',
+  '{used} checks this month, {free} included': '{used} revisiones este mes, {free} incluidas',
+  'You have used this month’s free checks. Plus gives you unlimited checks for $3 a month.':
+    'Ya usó las revisiones gratis de este mes. Plus le da revisiones sin límite por $3 al mes.',
+  'See Plus': 'Ver Plus',
+  'During sunhacks 2026 every check stays free, so you can keep going.': 'Durante sunhacks 2026 todas las revisiones siguen gratis, así que puede continuar.',
+})

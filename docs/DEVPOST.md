@@ -76,7 +76,7 @@ Textract Queries, Bedrock, SAM, S3 Object Lock, the TinyFish agent API, and how 
 ## Business model
 
 Freemium, shown side by side on the pricing page. Payments are not switched on yet. "Notify me" and "Talk to us" open a short form that saves an email (and the organization name, for Partners) to a waitlist. The app never asks for card details; paid sign-up would use a hosted payment page such as Stripe Checkout.
-- **Free:** the log, the nightly seal, offline clock-in, two pay stub checks a month and a ready-made note. A worker's own record should never cost money.
+- **Free:** the log, the nightly seal, offline clock-in, two pay stub checks a month and a ready-made note. A worker's own record should never cost money, so clocking in is never limited. The Check page shows a meter of free checks used this month and points to Plus once they run out. During the hackathon it never blocks anyone.
 - **Plus, $3 a month:** unlimited checks, AI-written letters, evidence packets and the claim form agent. These are the parts that cost money per use.
 - **Partners:** unions, worker centers and legal aid clinics pay for seats so their members get Plus for free.
 

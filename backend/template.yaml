@@ -214,6 +214,7 @@ Resources:
       Events:
         Check: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /check, Method: POST } }
         History: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /history, Method: GET } }
+        Usage: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /usage, Method: GET } }
 
   LettersFunction:
     Type: AWS::Serverless::Function

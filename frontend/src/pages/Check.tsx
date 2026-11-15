@@ -4,6 +4,7 @@ import ConfirmFields from '../components/ConfirmFields'
 import ImagePopup from '../components/ImagePopup'
 import StepTrail from '../components/StepTrail'
 import StubUpload, { prepareImage } from '../components/StubUpload'
+import UsageMeter from '../components/UsageMeter'
 import { api, uploadStub, type StubFieldName, type StubFields } from '../lib/api'
 import { SAMPLE_WORKER, getDeviceId, isDemo } from '../lib/device'
 import { store } from '../lib/store'
@@ -93,6 +94,7 @@ export default function Check() {
 
       {stage === 'upload' && (
         <>
+          <UsageMeter />
           {error && <p className="rounded-xl bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}
           {isDemo() && (
             <section className="rounded-2xl border-2 border-dashed border-ink bg-hi-soft p-4">

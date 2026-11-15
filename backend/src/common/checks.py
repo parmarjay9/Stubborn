@@ -27,6 +27,20 @@ def run_check(device_id, stub, entries=None, checked_at=None):
     return result
 
 
+ARIZONA = timezone(timedelta(hours=-7))  # Arizona does not use daylight saving time
+
+
+def usage(device_id, now=None):
+    """How many pay stub checks this device ran in the current calendar month."""
+    month = (now or datetime.now(timezone.utc)).astimezone(ARIZONA).strftime("%Y-%m")
+    used = sum(
+        1 for record in db.store().list_checks(device_id)
+        if datetime.fromisoformat(record["result"]["checkedAt"]).astimezone(ARIZONA).strftime("%Y-%m") == month
+    )
+    return {"month": month, "checksUsed": used, "freeChecks": config.FREE_CHECKS_PER_MONTH,
+            "enforced": False}
+
+
 def history(device_id):
     """Every pay period the worker has checked, plus logged workweeks that have
     no stub yet. Newest first. Totals are summed here with Decimal, not in the UI."""

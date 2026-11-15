@@ -19,6 +19,10 @@ WORKWEEK_START_WEEKDAY = 6  # Sunday through Saturday
 
 ZERO_HASH = "0" * 64
 
+# Free plan: pay stub checks included each calendar month (Arizona time).
+# Shown as a meter only; nothing is blocked during the hackathon.
+FREE_CHECKS_PER_MONTH = 2
+
 DEMO_MODE = os.environ.get("DEMO_MODE", "1") == "1"
 
 # Bedrock. Claude Sonnet 4.6 is the model this AWS account has an accepted
