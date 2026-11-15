@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Breakdown from '../components/Breakdown'
 import OwedCard from '../components/OwedCard'
+import PaydayReminder from '../components/PaydayReminder'
 import StepTrail from '../components/StepTrail'
 import { store } from '../lib/store'
 
@@ -60,6 +61,8 @@ export default function Result() {
           </Link>
         </div>
       )}
+
+      <PaydayReminder />
 
       <div className="flex justify-center gap-6 text-sm font-semibold text-muted">
         <Link to="/history" className="underline">

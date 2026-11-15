@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import PaydayReminder from '../components/PaydayReminder'
 import { api, type HistoryPeriod, type HistoryResult } from '../lib/api'
 import { getDeviceId, isDemo, markSampleSeeded } from '../lib/device'
 import { hoursText, money, shortDate } from '../lib/format'
@@ -181,6 +182,8 @@ export default function History() {
           ))}
         </ul>
       )}
+
+      <PaydayReminder />
 
       {isDemo() && (
         <button type="button" className="min-h-12 text-sm font-semibold text-muted underline" disabled={resetting} onClick={resetSample}>
