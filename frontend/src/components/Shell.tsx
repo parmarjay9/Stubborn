@@ -22,6 +22,11 @@ export function Footer() {
   return (
     <footer className="mt-12 border-t-2 border-dashed border-ink/30 pt-6 text-center text-sm leading-relaxed text-muted">
       <p className="font-display text-lg font-extrabold text-ink">{t('Stay stubborn.')}</p>
+      <p className="mt-2">
+        <Link to="/pricing" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">
+          {t('Pricing')}
+        </Link>
+      </p>
       <p className="mt-2">{t('Stubborn flags possible underpayment. It is not legal advice.')}</p>
       <p className="mt-1">
         {t('Built by')} <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> {t('at')} <span className="font-bold text-ink">sunhacks 2026</span>, ASU Tempe.
@@ -59,6 +64,14 @@ export default function Shell({ children }: { children: ReactNode }) {
                 {t(tab.label)}
               </NavLink>
             ))}
+            <NavLink
+              to="/pricing"
+              className={({ isActive }) =>
+                `rounded-lg border-2 px-3 py-1.5 text-sm font-bold ${isActive ? 'border-ink bg-hi text-ink' : 'border-transparent text-muted hover:text-ink'}`
+              }
+            >
+              {t('Pricing')}
+            </NavLink>
           </nav>
           <div className="flex items-center gap-2">
             <span className="tag hidden rounded border-2 border-ink px-1.5 py-0.5 min-[400px]:inline md:hidden">sunhacks 2026</span>

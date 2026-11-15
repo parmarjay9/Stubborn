@@ -18,6 +18,7 @@ Stubborn flags possible underpayment. It is not legal advice.
 - **Device secrets.** Each phone has a private secret next to its device id. The first phone to use a log registers it, and every read or write of that log must present it, so a device id seen in a share link gives no access.
 - **Spanish.** EN/ES switch on every screen and the packet. The rules engine returns each finding's numbers separately, so numbers never pass through translation. Claude writes the letters in Spanish, with the same dollar-amount check.
 - **Payday reminder.** A repeating calendar event (.ics) for weekly or biweekly paydays.
+- **Pricing page.** A freemium model at `/pricing`: Free for the log and basic checks, Plus at $3 a month for the parts that cost money to run, and Partners for unions and clinics that cover their members. It is a preview: payments are not switched on and nothing is locked.
 
 ## Run it locally
 

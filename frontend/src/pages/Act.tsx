@@ -147,7 +147,10 @@ export default function Act() {
       </section>
 
       <section className="card grid gap-3">
-        <h2 className="text-xl font-extrabold">{t('2. Make an evidence packet')}</h2>
+        <h2 className="text-xl font-extrabold">
+          {t('2. Make an evidence packet')}
+          <span className="tag ml-2 rounded border-2 border-ink bg-hi px-1.5 py-0.5 align-middle" title={t('Part of Plus. Unlocked during sunhacks 2026.')}>Plus</span>
+        </h2>
         <p className="text-sm text-muted">
           {t('One page with your result and the hours behind it, plus a QR code. Whoever scans it can check, on their own phone, that your log was never edited. Save it as a PDF to attach to an email or a claim.')}
         </p>
@@ -155,7 +158,10 @@ export default function Act() {
       </section>
 
       <section ref={claimRef} className="card grid scroll-mt-20 gap-3">
-        <h2 className="text-xl font-extrabold">{t('3. File a wage claim')}</h2>
+        <h2 className="text-xl font-extrabold">
+          {t('3. File a wage claim')}
+          <span className="tag ml-2 rounded border-2 border-ink bg-hi px-1.5 py-0.5 align-middle" title={t('Part of Plus. Unlocked during sunhacks 2026.')}>Plus</span>
+        </h2>
         <p className="text-sm text-muted">
           {t('A web agent fills in a claim form with your details and your numbers, then stops so you can review. It never presses submit.')}
         </p>

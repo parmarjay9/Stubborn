@@ -337,6 +337,17 @@ export default function Home() {
         </ul>
       </section>
 
+      <section className="card grid gap-3">
+        <p className="tag text-muted">{t('Pricing')}</p>
+        <h2 className="text-2xl font-extrabold">{t('Free to keep your record. Small price for backup.')}</h2>
+        <p className="text-[0.95rem] leading-snug text-muted">
+          {t('Clocking in, the tamper-evident log and basic pay checks are free for good. Plus is $3 a month for unlimited checks, AI-written notes, evidence packets and the claim form agent. Unions and clinics can cover it for their members.')}
+        </p>
+        <Link to="/pricing" className="btn btn-secondary">
+          {t('See pricing')}
+        </Link>
+      </section>
+
       <section className="rounded-2xl border-2 border-dashed border-ink/40 p-4 text-sm leading-relaxed text-muted">
         <p className="tag text-ink">{t('The fine print, in plain words')}</p>
         <p className="mt-2">
