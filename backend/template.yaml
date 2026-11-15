@@ -34,6 +34,7 @@ Globals:
         RUNS_TABLE: !Ref RunsTable
         SHARES_TABLE: !Ref SharesTable
         DEVICES_TABLE: !Ref DevicesTable
+        WAITLIST_TABLE: !Ref WaitlistTable
         SEAL_BUCKET: !Ref SealBucket
         STUB_BUCKET: !Ref StubBucket
         FRONTEND_URL: !Ref FrontendUrl
@@ -56,6 +57,7 @@ Resources:
         "POST /stub/upload-url": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
         "POST /shifts/demo": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
         "POST /share": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
+        "POST /waitlist": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
         "GET /share/{shareId}": { ThrottlingBurstLimit: 10, ThrottlingRateLimit: 5 }
       CorsConfiguration:
         AllowOrigins: ["*"]
@@ -101,6 +103,15 @@ Resources:
         - { AttributeName: shareId, AttributeType: S }
       KeySchema:
         - { AttributeName: shareId, KeyType: HASH }
+
+  WaitlistTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: email, AttributeType: S }
+      KeySchema:
+        - { AttributeName: email, KeyType: HASH }
 
   DevicesTable:
     Type: AWS::DynamoDB::Table
@@ -267,6 +278,18 @@ Resources:
       Events:
         Create: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /share, Method: POST } }
         Read: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: "/share/{shareId}", Method: GET } }
+
+  WaitlistFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: waitlist.handler.handler
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: dynamodb:PutItem
+              Resource: !GetAtt WaitlistTable.Arn
+      Events:
+        Join: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /waitlist, Method: POST } }
 
   SealFunction:
     Type: AWS::Serverless::Function

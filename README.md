@@ -18,7 +18,11 @@ Stubborn flags possible underpayment. It is not legal advice.
 - **Device secrets.** Each phone has a private secret next to its device id. The first phone to use a log registers it, and every read or write of that log must present it, so a device id seen in a share link gives no access.
 - **Spanish.** EN/ES switch on every screen and the packet. The rules engine returns each finding's numbers separately, so numbers never pass through translation. Claude writes the letters in Spanish, with the same dollar-amount check.
 - **Payday reminder.** A repeating calendar event (.ics) for weekly or biweekly paydays.
-- **Pricing page.** A freemium model at `/pricing`: Free for the log and basic checks, Plus at $3 a month for the parts that cost money to run, and Partners for unions and clinics that cover their members. It is a preview: payments are not switched on and nothing is locked.
+- **Pricing page.** A freemium model at `/pricing`: Free for the log and basic checks, Plus at $3 a month for the parts that cost money to run, and Partners for unions and clinics that cover their members. It is a preview: payments are not switched on and nothing is locked. "Notify me" and "Talk to us" open a short form that saves an email (and organization, for Partners) to a DynamoDB waitlist. Card details are never collected in the app; paid signup would use a hosted payment page such as Stripe Checkout. To see the list:
+
+  ```bash
+  aws dynamodb scan --region us-west-2 --table-name $(aws cloudformation describe-stack-resource --stack-name stubborn --logical-resource-id WaitlistTable --query StackResourceDetail.PhysicalResourceId --output text) --query 'Items[].[email.S,plan.S,organization.S,joinedAt.S]' --output table
+  ```
 
 ## Run it locally
 
@@ -58,7 +62,7 @@ The demo case is a test: 43.5 hours logged at $17.00, stub pays 38 regular hours
 
 ## Live
 
-- Website: https://main.d3ephm9p0a7e00.amplifyapp.com (AWS Amplify)
+- Website: https://getstubborn.club (AWS Amplify)
 - API: https://j1m5comkbd.execute-api.us-west-2.amazonaws.com (API Gateway + Lambda, us-west-2)
 
 ## Deploy

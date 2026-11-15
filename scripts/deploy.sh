@@ -14,7 +14,7 @@ STACK="stubborn"
 AMPLIFY_APP_ID="${AMPLIFY_APP_ID:-d3ephm9p0a7e00}"
 BEDROCK_MODEL_ID="${BEDROCK_MODEL_ID:-us.anthropic.claude-sonnet-4-6}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SITE_URL="https://main.${AMPLIFY_APP_ID}.amplifyapp.com"
+SITE_URL="${SITE_URL:-https://getstubborn.club}"
 WHAT="${1:-all}"
 
 api_url() {

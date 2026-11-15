@@ -170,6 +170,8 @@ export const api = {
   share: (deviceId: string, checkId: string, worker: { name: string; employer: string }) =>
     call<{ shareId: string }>('POST', '/share', { deviceId, checkId, worker }),
   readShare: (shareId: string) => call<SharedPacket>('GET', `/share/${encodeURIComponent(shareId)}`),
+  joinWaitlist: (entry: { email: string; plan: 'plus' | 'partners'; lang: 'en' | 'es'; organization: string }) =>
+    call<{ ok: boolean }>('POST', '/waitlist', entry),
   history: (deviceId: string) => call<HistoryResult>('GET', `/history?deviceId=${deviceId}`),
   letters: (check: CheckResult, worker: Worker, lang: 'en' | 'es' = 'en') => call<Letters>('POST', '/letters', { check, worker, lang }),
   agentStart: (deviceId: string, claim: Claim) => call<{ runId: string }>('POST', '/agent/start', { deviceId, claim }),

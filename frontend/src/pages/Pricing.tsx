@@ -1,12 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import WaitlistForm, { joinedPlans, type WaitlistPlan } from '../components/WaitlistForm'
 import { t } from '../lib/i18n'
 
 // Planned pricing. Payments are not switched on: this page shows the model,
 // and every feature stays unlocked during the hackathon.
 // The three plans sit side by side on every screen size, as a comparison table.
-
-const PLAN_KEY = 'stubborn.planInterest'
 
 type PlanId = 'free' | 'plus' | 'partners'
 
@@ -64,21 +63,18 @@ function CellView({ value }: { value: Cell }) {
 }
 
 export default function Pricing() {
-  const [interest, setInterest] = useState<string | null>(() => {
-    try {
-      return localStorage.getItem(PLAN_KEY)
-    } catch {
-      return null
-    }
-  })
+  const [open, setOpen] = useState<WaitlistPlan | null>(null)
+  const [joined, setJoined] = useState<WaitlistPlan[]>(joinedPlans)
+  const formRef = useRef<HTMLDivElement>(null)
 
-  const choose = (id: PlanId) => {
-    setInterest(id)
-    try {
-      localStorage.setItem(PLAN_KEY, id)
-    } catch {
-      // the choice just will not be remembered
-    }
+  useEffect(() => {
+    if (open) formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [open])
+
+  const choose = (id: WaitlistPlan) => setOpen(id)
+  const close = () => {
+    setOpen(null)
+    setJoined(joinedPlans())
   }
 
   const cta = (id: PlanId) => {
@@ -90,10 +86,10 @@ export default function Pricing() {
         </Link>
       )
     }
-    if (interest === id) {
+    if (joined.includes(id)) {
       return (
         <p role="status" className="rounded-lg border-2 border-accent bg-accent-soft px-1 py-2 text-center text-xs font-bold text-accent-dark">
-          {t('Noted')}
+          {id === 'plus' ? t('On the list') : t('We will be in touch')}
         </p>
       )
     }
@@ -152,11 +148,9 @@ export default function Pricing() {
         </ul>
       </section>
 
-      {interest && interest !== 'free' && (
-        <p role="status" className="rounded-xl border-2 border-accent bg-accent-soft px-4 py-3 text-sm font-semibold text-accent-dark">
-          {t('Noted on this phone. Nothing was charged and no account was made.')}
-        </p>
-      )}
+      <div ref={formRef} className="scroll-mt-20 empty:hidden">
+        {open && <WaitlistForm key={open} plan={open} onClose={close} />}
+      </div>
 
       <section>
         <p className="tag text-muted">{t('Why it is priced this way')}</p>

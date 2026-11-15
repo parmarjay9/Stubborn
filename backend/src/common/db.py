@@ -5,6 +5,7 @@ Checks table:  PK deviceId (S), SK checkId (S), data (JSON string)
 Runs table:    PK runId (S), data (JSON string)
 Shares table:  PK shareId (S), data (JSON string)
 Devices table: PK deviceId (S), secretHash (S)
+Waitlist table: PK email (S), plan, lang, organization, joinedAt
 """
 import json
 import os
@@ -37,7 +38,7 @@ class _LocalStore:
             with open(self.path) as fh:
                 return json.load(fh)
         except (FileNotFoundError, ValueError):
-            return {"shifts": {}, "checks": {}, "runs": {}, "shares": {}, "devices": {}, "seals": []}
+            return {"shifts": {}, "checks": {}, "runs": {}, "shares": {}, "devices": {}, "seals": [], "waitlist": {}}
 
     def _save(self, data):
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
@@ -122,6 +123,12 @@ class _LocalStore:
                 self._save(data)
             return devices[device_id]
 
+    def put_waitlist(self, entry):
+        with self.lock:
+            data = self._load()
+            data.setdefault("waitlist", {})[entry["email"]] = entry
+            self._save(data)
+
     def scan_heads(self):
         with self.lock:
             return {d: (len(c), sorted(c, key=lambda e: e["seq"])[-1]["hash"])
@@ -159,6 +166,7 @@ class _DynamoStore:
         self.runs = resource.Table(os.environ["RUNS_TABLE"])
         self.shares = resource.Table(os.environ["SHARES_TABLE"])
         self.devices = resource.Table(os.environ["DEVICES_TABLE"])
+        self.waitlist = resource.Table(os.environ["WAITLIST_TABLE"]) if os.environ.get("WAITLIST_TABLE") else None
 
     @staticmethod
     def _to_item(entry):
@@ -271,6 +279,9 @@ class _DynamoStore:
             if err.response["Error"]["Code"] != "ConditionalCheckFailedException":
                 raise
         return self.get_device(device_id)
+
+    def put_waitlist(self, entry):
+        self.waitlist.put_item(Item=entry)
 
     def scan_heads(self):
         best, kwargs = {}, {"ProjectionExpression": "deviceId, seq, #h", "ExpressionAttributeNames": {"#h": "hash"}}

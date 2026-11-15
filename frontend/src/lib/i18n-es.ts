@@ -566,3 +566,35 @@ Object.assign(ES, {
   'The worker': 'El trabajador',
   'The organization': 'La organización',
 })
+
+// Waitlist
+Object.assign(ES, {
+  'That did not go through. Please try again.': 'No se pudo enviar. Intente otra vez.',
+  'Thanks, we will be in touch': 'Gracias, nos pondremos en contacto',
+  'You are on the list': 'Ya está en la lista',
+  'We will email you about bringing Stubborn to your members.': 'Le escribiremos para llevar Stubborn a sus miembros.',
+  'We will send you one email when Plus opens. Nothing was charged, and you can keep using everything for free until then.':
+    'Le enviaremos un solo correo cuando abra Plus. No se cobró nada y puede seguir usando todo gratis hasta entonces.',
+  'Keep using Stubborn': 'Seguir usando Stubborn',
+  Close: 'Cerrar',
+  'Plus, $3 a month': 'Plus, $3 al mes',
+  'Bring Stubborn to your members': 'Lleve Stubborn a sus miembros',
+  'Get told when Plus opens': 'Entérese cuando abra Plus',
+  'Leave your email and organization.': 'Deje su correo y el nombre de su organización.',
+  'We reach out to set up seats for your members.': 'Nos comunicamos para preparar los lugares de sus miembros.',
+  'Your members get Plus at no cost to them.': 'Sus miembros reciben Plus sin costo para ellos.',
+  'Leave your email. That is all for now.': 'Deje su correo. Por ahora es todo.',
+  'When Plus opens, we send you one email.': 'Cuando abra Plus, le enviamos un solo correo.',
+  'You choose whether to subscribe then. Card details are taken on a secure payment page, never here.':
+    'Entonces usted decide si se suscribe. Los datos de la tarjeta se piden en una página de pago segura, nunca aquí.',
+  'you@example.com': 'usted@ejemplo.com',
+  Organization: 'Organización',
+  'Union, worker center or clinic': 'Sindicato, centro de trabajadores o clínica',
+  'Saving...': 'Guardando...',
+  'Contact me': 'Contáctenme',
+  'Notify me when Plus opens': 'Avíseme cuando abra Plus',
+  'We only use your email for this. We never sell it, and Stubborn never asks for card details on this page.':
+    'Solo usamos su correo para esto. Nunca lo vendemos, y Stubborn nunca pide datos de tarjeta en esta página.',
+  'On the list': 'En la lista',
+  'We will be in touch': 'Le escribiremos',
+})

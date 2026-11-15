@@ -38,6 +38,7 @@ from letters import handler as letters_handler  # noqa: E402
 from shifts import handler as shifts_handler  # noqa: E402
 from share import handler as share_handler  # noqa: E402
 from stub import handler as stub_handler  # noqa: E402
+from waitlist import handler as waitlist_handler  # noqa: E402
 
 ROUTES = [
     ("GET", r"/health", health.handler),
@@ -53,6 +54,7 @@ ROUTES = [
     ("POST", r"/agent/start", agent_start.handler),
     ("GET", r"/agent/status/(?P<runId>[^/]+)", agent_status.handler),
     ("POST", r"/share", share_handler.handler),
+    ("POST", r"/waitlist", waitlist_handler.handler),
     ("GET", r"/share/(?P<shareId>[^/]+)", share_handler.handler),
 ]
 UPLOAD_RE = re.compile(r"^/local-upload/(stubs/[0-9a-f-]{36}/[0-9a-f]{32}\.(?:jpg|png))$")

@@ -2,7 +2,7 @@
 
 **Your hours. Your proof. Your pay.**
 
-Live: https://main.d3ephm9p0a7e00.amplifyapp.com
+Live: https://getstubborn.club
 Code: https://github.com/parmarjay9/Stubborn
 
 ## Inspiration
@@ -67,7 +67,7 @@ Textract Queries, Bedrock, SAM, S3 Object Lock, the TinyFish agent API, and how 
 
 ## Business model
 
-Freemium, shown on the pricing page (payments are not switched on yet):
+Freemium, shown on the pricing page. Payments are not switched on yet; interested workers and organizations can join a waitlist that is stored in DynamoDB.
 - **Free:** the log, the nightly seal, offline clock-in, two pay stub checks a month and a ready-made note. A worker's own record should never cost money.
 - **Plus, $3 a month:** unlimited checks, AI-written letters, evidence packets and the claim form agent. These are the parts that cost money per use.
 - **Partners:** unions, worker centers and legal aid clinics pay for seats so their members get Plus for free.
