@@ -1,6 +1,7 @@
 """POST /check runs the rules engine. GET /history lists hours against pay stubs."""
 from common import checks
 from common.api import BadRequest, body_of, query_of, route
+from common.auth import require_device
 from rules.engine import StubError
 from shifts.handler import _device
 
@@ -8,6 +9,7 @@ from shifts.handler import _device
 def check(event):
     body = body_of(event)
     device_id = _device(body.get("deviceId"))
+    require_device(event, device_id)
     stub = body.get("stub")
     if not isinstance(stub, dict):
         raise BadRequest("Missing pay stub fields.")
@@ -18,7 +20,9 @@ def check(event):
 
 
 def history(event):
-    return 200, checks.history(_device(query_of(event).get("deviceId")))
+    device_id = _device(query_of(event).get("deviceId"))
+    require_device(event, device_id)
+    return 200, checks.history(device_id)
 
 
 handler = route({"POST /check": check, "GET /history": history})

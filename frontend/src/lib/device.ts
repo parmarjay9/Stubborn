@@ -5,6 +5,9 @@
 
 const DEVICE_KEY = 'stubborn.deviceId'
 const SAMPLE_KEY = 'stubborn.sampleId'
+// The private half: never shown, never shared. The server only stores its hash.
+const DEVICE_SECRET_KEY = 'stubborn.deviceSecret'
+const SAMPLE_SECRET_KEY = 'stubborn.sampleSecret'
 const MODE_KEY = 'stubborn.demo'
 const SEEDED_KEY = 'stubborn.sampleSeeded'
 // Page state that belongs to one account and must not leak into the other.
@@ -39,12 +42,18 @@ function uuid(): string {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
 }
 
+function randomSecret(): string {
+  const bytes = new Uint8Array(32)
+  globalThis.crypto.getRandomValues(bytes)
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
 const memory: Record<string, string> = {}
 
-function idFor(key: string): string {
+function idFor(key: string, make: () => string = uuid): string {
   let id = read(key) ?? memory[key]
   if (!id) {
-    id = uuid()
+    id = make()
     memory[key] = id
     write(key, id)
   }
@@ -65,6 +74,11 @@ export function setDemo(on: boolean) {
 
 export function getDeviceId(): string {
   return idFor(isDemo() ? SAMPLE_KEY : DEVICE_KEY)
+}
+
+/** Proves to the server that this phone owns the log. Sent as a header, never in a link. */
+export function getDeviceSecret(): string {
+  return idFor(isDemo() ? SAMPLE_SECRET_KEY : DEVICE_SECRET_KEY, randomSecret)
 }
 
 /** Has this browser's sample account been loaded with its history yet? */

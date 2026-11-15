@@ -1,3 +1,4 @@
+import { getDeviceSecret } from './device'
 import type { Entry } from './hashchain'
 
 const configured = import.meta.env.VITE_API_URL as string | undefined
@@ -17,7 +18,7 @@ async function call<T>(method: 'GET' | 'POST', path: string, body?: unknown): Pr
   try {
     response = await fetch(API_BASE + path, {
       method,
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      headers: { 'X-Device-Secret': getDeviceSecret(), ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     })
   } catch {
@@ -97,6 +98,28 @@ export interface HistoryResult {
   summary: { periodsChecked: number; periodsWithGap: number; periodsNotChecked: number; totalOwed: string }
 }
 
+export interface Seal {
+  sealedAt: string
+  count: number
+  headHash: string
+  rootHash: string
+  key: string
+  versionId: string | null
+  retainUntil: string | null
+  matches: boolean
+}
+
+export interface SharedPacket {
+  shareId: string
+  createdAt: string
+  worker: { name: string; employer: string }
+  deviceId: string
+  entries: Omit<Entry, 'deviceId'>[]
+  verify: VerifyResult
+  check: CheckResult | null
+  seal: Seal | null
+}
+
 export interface Letters {
   managerMessage: string
   complaintSummary: string
@@ -141,6 +164,9 @@ export const api = {
     call<{ key: string; uploadUrl: string }>('POST', '/stub/upload-url', { deviceId, contentType }),
   extract: (deviceId: string, key: string) => call<ExtractResult>('POST', '/stub/extract', { deviceId, key }),
   check: (deviceId: string, stub: StubFields) => call<CheckResult>('POST', '/check', { deviceId, stub }),
+  share: (deviceId: string, checkId: string, worker: { name: string; employer: string }) =>
+    call<{ shareId: string }>('POST', '/share', { deviceId, checkId, worker }),
+  readShare: (shareId: string) => call<SharedPacket>('GET', `/share/${encodeURIComponent(shareId)}`),
   history: (deviceId: string) => call<HistoryResult>('GET', `/history?deviceId=${deviceId}`),
   letters: (check: CheckResult, worker: Worker) => call<Letters>('POST', '/letters', { check, worker }),
   agentStart: (deviceId: string, claim: Claim) => call<{ runId: string }>('POST', '/agent/start', { deviceId, claim }),

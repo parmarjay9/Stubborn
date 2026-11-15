@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import AgentStatus from '../components/AgentStatus'
+import EvidencePacket from '../components/EvidencePacket'
 import LetterView from '../components/LetterView'
 import StepTrail from '../components/StepTrail'
 import { api, type Claim, type Worker } from '../lib/api'
@@ -143,8 +144,17 @@ export default function Act() {
         {error && <p className="rounded-xl bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}
       </section>
 
+      <section className="card grid gap-3">
+        <h2 className="text-xl font-extrabold">2. Make an evidence packet</h2>
+        <p className="text-sm text-muted">
+          One page with your result and the hours behind it, plus a QR code. Whoever scans it can check, on their own
+          phone, that your log was never edited. Save it as a PDF to attach to an email or a claim.
+        </p>
+        <EvidencePacket check={check} worker={worker} />
+      </section>
+
       <section ref={claimRef} className="card grid scroll-mt-20 gap-3">
-        <h2 className="text-xl font-extrabold">2. File a wage claim</h2>
+        <h2 className="text-xl font-extrabold">3. File a wage claim</h2>
         <p className="text-sm text-muted">
           A web agent fills in a claim form with your details and your numbers, then stops so you can review. It never
           presses submit.

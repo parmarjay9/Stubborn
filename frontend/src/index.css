@@ -184,6 +184,28 @@ label {
   animation: scan 2.4s ease-in-out infinite;
 }
 
+/* The evidence packet prints as a clean PDF */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: #fff !important;
+    font-size: 11pt;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .packet section {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  .hl {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pop,
   .thunk,

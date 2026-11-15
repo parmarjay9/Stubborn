@@ -19,8 +19,6 @@ WORKWEEK_START_WEEKDAY = 6  # Sunday through Saturday
 
 ZERO_HASH = "0" * 64
 
-# Fixed device used for the stage demo. seed_week.py fills it.
-DEMO_DEVICE_ID = "5eedde70-0000-4000-8000-00000000d340"
 DEMO_MODE = os.environ.get("DEMO_MODE", "1") == "1"
 
 # Bedrock. Confirm the model ID in the Bedrock console and request access

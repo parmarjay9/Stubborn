@@ -36,6 +36,7 @@ from agent import start as agent_start, status as agent_status  # noqa: E402
 from check import handler as check_handler  # noqa: E402
 from letters import handler as letters_handler  # noqa: E402
 from shifts import handler as shifts_handler  # noqa: E402
+from share import handler as share_handler  # noqa: E402
 from stub import handler as stub_handler  # noqa: E402
 
 ROUTES = [
@@ -51,6 +52,8 @@ ROUTES = [
     ("POST", r"/letters", letters_handler.handler),
     ("POST", r"/agent/start", agent_start.handler),
     ("GET", r"/agent/status/(?P<runId>[^/]+)", agent_status.handler),
+    ("POST", r"/share", share_handler.handler),
+    ("GET", r"/share/(?P<shareId>[^/]+)", share_handler.handler),
 ]
 UPLOAD_RE = re.compile(r"^/local-upload/(stubs/[0-9a-f-]{36}/[0-9a-f]{32}\.(?:jpg|png))$")
 
@@ -59,7 +62,7 @@ class Handler(BaseHTTPRequestHandler):
     def _cors(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Device-Secret")
 
     def _send(self, status, body=b"", content_type="application/json"):
         self.send_response(status)
@@ -95,6 +98,7 @@ class Handler(BaseHTTPRequestHandler):
                     "queryStringParameters": dict(parse_qsl(url.query)),
                     "pathParameters": match.groupdict(),
                     "body": self.rfile.read(length).decode("utf-8") if length else None,
+                    "headers": {k.lower(): v for k, v in self.headers.items()},
                 })
                 return self._send(result["statusCode"], result["body"].encode("utf-8"))
         self._send(404, b'{"error":"Not found"}')

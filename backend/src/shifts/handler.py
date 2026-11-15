@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from common import config, db
 from common.api import BadRequest, body_of, query_of, route
+from common.auth import require_device
 from common.hashchain import ZERO_HASH, hash_entry, verify_chain
 
 DEVICE_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
@@ -33,6 +34,7 @@ def _number(value, low, high, name):
 def append(event):
     body = body_of(event)
     device_id = _device(body.get("deviceId"))
+    require_device(event, device_id)
     seq = body.get("seq")
     if isinstance(seq, bool) or not isinstance(seq, int) or seq < 0:
         raise BadRequest("Invalid seq.")
@@ -85,11 +87,13 @@ def append(event):
 
 def list_entries(event):
     device_id = _device(query_of(event).get("deviceId"))
+    require_device(event, device_id)
     return 200, {"entries": [_public(e) for e in db.store().list_shifts(device_id)]}
 
 
 def verify(event):
     device_id = _device(query_of(event).get("deviceId"))
+    require_device(event, device_id)
     return 200, verify_chain(db.store().list_shifts(device_id))
 
 
@@ -101,6 +105,7 @@ def demo(event):
         raise BadRequest("Demo tools are turned off.", 403)
     body = body_of(event)
     device_id = _device(body.get("deviceId"))
+    require_device(event, device_id)
     action = body.get("action")
     store = db.store()
     chain = store.list_shifts(device_id)
@@ -109,8 +114,12 @@ def demo(event):
         store.delete_shifts(device_id)
         store.delete_checks(device_id)
     elif action == "seed":
-        from common import sample
+        from common import sample, seal
         sample.seed(device_id)
+        try:  # lock in today's fingerprint so the packet can show a seal right away
+            seal.seal_devices([device_id])
+        except Exception as err:
+            print(f"Seal after seeding failed: {err!r}")
     elif action == "tamper":
         if not chain:
             raise BadRequest("There is nothing in the log to change yet.")

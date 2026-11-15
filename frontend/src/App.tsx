@@ -7,6 +7,7 @@ import DemoClaimForm from './pages/DemoClaimForm'
 import History from './pages/History'
 import Home from './pages/Home'
 import Log from './pages/Log'
+import Packet from './pages/Packet'
 import Result from './pages/Result'
 
 const page = (element: React.ReactNode) => (
@@ -27,6 +28,8 @@ export default function App() {
         <Route path="/act" element={page(<Act />)} />
         {/* Stands alone on purpose: it plays the part of an outside website. */}
         <Route path="/demo-claim-form" element={<DemoClaimForm />} />
+        {/* The evidence packet is public and read-only, so it skips the app shell. */}
+        <Route path="/v/:shareId" element={<Packet />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -10,6 +10,7 @@ import uuid
 from agent.runs import now
 from common import config, db
 from common.api import BadRequest, body_of, route
+from common.auth import require_device
 from shifts.handler import _device
 
 CLAIM_FIELDS = ("name", "phone", "email", "employer", "payPeriodStart", "payPeriodEnd", "hourlyRate",
@@ -19,6 +20,7 @@ CLAIM_FIELDS = ("name", "phone", "email", "employer", "payPeriodStart", "payPeri
 def start(event):
     body = body_of(event)
     device_id = _device(body.get("deviceId"))
+    require_device(event, device_id)
     claim = body.get("claim")
     if not isinstance(claim, dict) or not claim.get("name") or not claim.get("employer"):
         raise BadRequest("Please add your name and your employer's name first.")

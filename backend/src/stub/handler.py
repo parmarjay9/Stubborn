@@ -7,6 +7,7 @@ from decimal import Decimal, InvalidOperation
 
 from common import config
 from common.api import BadRequest, body_of, route
+from common.auth import require_device
 from shifts.handler import _device
 
 QUERIES = [
@@ -75,6 +76,7 @@ def parse_textract(response):
 def upload_url(event):
     body = body_of(event)
     device_id = _device(body.get("deviceId"))
+    require_device(event, device_id)
     content_type = body.get("contentType")
     if content_type not in CONTENT_TYPES:
         raise BadRequest("Please use a JPEG or PNG photo.")
@@ -98,7 +100,7 @@ def upload_url(event):
 
 def extract(event):
     body = body_of(event)
-    _device(body.get("deviceId"))
+    require_device(event, _device(body.get("deviceId")))
     key = body.get("key")
     if not isinstance(key, str) or not KEY_RE.match(key) or key.split("/")[1] != body["deviceId"]:
         raise BadRequest("Unknown upload.")

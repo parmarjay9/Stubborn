@@ -32,6 +32,9 @@ Globals:
         SHIFTS_TABLE: !Ref ShiftsTable
         CHECKS_TABLE: !Ref ChecksTable
         RUNS_TABLE: !Ref RunsTable
+        SHARES_TABLE: !Ref SharesTable
+        DEVICES_TABLE: !Ref DevicesTable
+        SEAL_BUCKET: !Ref SealBucket
         STUB_BUCKET: !Ref StubBucket
         FRONTEND_URL: !Ref FrontendUrl
         BEDROCK_MODEL_ID: !Ref BedrockModelId
@@ -52,10 +55,12 @@ Resources:
         "POST /stub/extract": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
         "POST /stub/upload-url": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
         "POST /shifts/demo": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
+        "POST /share": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
+        "GET /share/{shareId}": { ThrottlingBurstLimit: 10, ThrottlingRateLimit: 5 }
       CorsConfiguration:
         AllowOrigins: ["*"]
         AllowMethods: [GET, POST, OPTIONS]
-        AllowHeaders: [Content-Type]
+        AllowHeaders: [Content-Type, X-Device-Secret]
 
   ShiftsTable:
     Type: AWS::DynamoDB::Table
@@ -87,6 +92,47 @@ Resources:
         - { AttributeName: runId, AttributeType: S }
       KeySchema:
         - { AttributeName: runId, KeyType: HASH }
+
+  SharesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: shareId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: shareId, KeyType: HASH }
+
+  DevicesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: deviceId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: deviceId, KeyType: HASH }
+
+  # Daily seals. Object Lock (governance mode, 30 days) means a sealed file
+  # cannot be overwritten or deleted during that time without a special
+  # bypass permission that none of the app's functions have.
+  SealBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      ObjectLockEnabled: true
+      ObjectLockConfiguration:
+        ObjectLockEnabled: Enabled
+        Rule:
+          DefaultRetention:
+            Mode: GOVERNANCE
+            Days: 30
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   StubBucket:
     Type: AWS::S3::Bucket
@@ -120,6 +166,11 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy: { TableName: !Ref ShiftsTable }
         - DynamoDBCrudPolicy: { TableName: !Ref ChecksTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref DevicesTable }
+        - Statement:
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: !Sub "${SealBucket.Arn}/seals/*"
       Events:
         Append: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: POST } }
         List: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /shifts, Method: GET } }
@@ -131,6 +182,7 @@ Resources:
     Properties:
       Handler: stub.handler.handler
       Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref DevicesTable }
         - S3CrudPolicy: { BucketName: !Ref StubBucket }
         - Statement:
             - Effect: Allow
@@ -145,6 +197,7 @@ Resources:
     Properties:
       Handler: check.handler.handler
       Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref DevicesTable }
         - DynamoDBReadPolicy: { TableName: !Ref ShiftsTable }
         - DynamoDBCrudPolicy: { TableName: !Ref ChecksTable }
       Events:
@@ -175,6 +228,7 @@ Resources:
         Variables:
           WORKER_FUNCTION: !Ref AgentWorkerFunction
       Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref DevicesTable }
         - DynamoDBCrudPolicy: { TableName: !Ref RunsTable }
         - LambdaInvokePolicy: { FunctionName: !Ref AgentWorkerFunction }
       Events:
@@ -194,6 +248,45 @@ Resources:
               Action: ssm:GetParameter
               Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${TinyFishKeyParam}
 
+  ShareFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: share.handler.handler
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ShiftsTable }
+        - DynamoDBReadPolicy: { TableName: !Ref ChecksTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref SharesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref DevicesTable }
+        - Statement:
+            - Effect: Allow
+              Action: [s3:ListBucket]
+              Resource: !GetAtt SealBucket.Arn
+            - Effect: Allow
+              Action: [s3:GetObject, s3:GetObjectVersion, s3:GetObjectRetention]
+              Resource: !Sub "${SealBucket.Arn}/seals/*"
+      Events:
+        Create: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: /share, Method: POST } }
+        Read: { Type: HttpApi, Properties: { ApiId: !Ref Api, Path: "/share/{shareId}", Method: GET } }
+
+  SealFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: seal.handler.handler
+      Timeout: 120
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref ShiftsTable }
+        - Statement:
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: !Sub "${SealBucket.Arn}/seals/*"
+      Events:
+        Nightly:
+          Type: ScheduleV2
+          Properties:
+            # 11:59 PM Arizona time (UTC-7, no daylight saving)
+            ScheduleExpression: cron(59 6 * * ? *)
+            Description: Seal every log's latest fingerprint into locked storage
+
   AgentStatusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -209,3 +302,5 @@ Outputs:
     Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com
   StubBucketName:
     Value: !Ref StubBucket
+  SealBucketName:
+    Value: !Ref SealBucket
