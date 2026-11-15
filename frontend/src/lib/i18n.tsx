@@ -68,7 +68,7 @@ export function useLang() {
 export function LangSwitch({ className = '' }: { className?: string }) {
   const { lang, setLang } = useLang()
   return (
-    <div role="group" aria-label="Language / Idioma" className={`flex overflow-hidden rounded-md border-2 border-ink text-xs font-extrabold ${className}`}>
+    <div role="group" aria-label="Language / Idioma" className={`flex shrink-0 overflow-hidden rounded-md border-2 border-ink text-xs font-extrabold ${className}`}>
       {(['en', 'es'] as const).map((code) => (
         <button
           key={code}

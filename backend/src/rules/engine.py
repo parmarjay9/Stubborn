@@ -13,6 +13,20 @@ CENT = Decimal("0.01")
 HUNDREDTH_HOUR = Decimal("0.01")
 
 
+class Note(str):
+    """A warning: plain English text, plus a code and values so the app can
+    word it in another language."""
+
+    def __new__(cls, text, code, **params):
+        note = super().__new__(cls, text)
+        note.code, note.params = code, {k: str(v) for k, v in params.items()}
+        return note
+
+
+def _stamp(ts: datetime) -> str:
+    return ts.replace(tzinfo=None).isoformat(timespec="minutes")
+
+
 class StubError(ValueError):
     """The confirmed stub fields are missing or not usable."""
 
@@ -52,37 +66,38 @@ def pair_shifts(entries):
         try:
             ts = datetime.fromisoformat(entry["clientTs"])
         except (KeyError, ValueError):
-            warnings.append(f"Entry {entry.get('seq')} has an unreadable time and was skipped.")
+            warnings.append(Note(f"Entry {entry.get('seq')} has an unreadable time and was skipped.",
+                                 "unreadable_time", seq=entry.get("seq")))
             continue
         if entry.get("type") == "IN":
             if open_in is not None:
-                warnings.append(
-                    f"Clock-in on {open_in.strftime('%b %d at %I:%M %p')} has no clock-out and was not counted."
-                )
+                warnings.append(Note(
+                    f"Clock-in on {open_in.strftime('%b %d at %I:%M %p')} has no clock-out and was not counted.",
+                    "in_without_out", at=_stamp(open_in)))
             open_in = ts
         elif entry.get("type") == "OUT":
             if open_in is None:
-                warnings.append(
-                    f"Clock-out on {ts.strftime('%b %d at %I:%M %p')} has no clock-in and was not counted."
-                )
+                warnings.append(Note(
+                    f"Clock-out on {ts.strftime('%b %d at %I:%M %p')} has no clock-in and was not counted.",
+                    "out_without_in", at=_stamp(ts)))
                 continue
             end = ts.astimezone(open_in.tzinfo) if open_in.tzinfo and ts.tzinfo else ts
             start_local, end_local = open_in.replace(tzinfo=None), end.replace(tzinfo=None)
             if end_local <= start_local:
-                warnings.append(
-                    f"Shift on {open_in.strftime('%b %d')} ends before it starts and was not counted."
-                )
+                warnings.append(Note(
+                    f"Shift on {open_in.strftime('%b %d')} ends before it starts and was not counted.",
+                    "ends_before_start", day=open_in.date().isoformat()))
             else:
                 if end_local - start_local > timedelta(hours=24):
-                    warnings.append(
-                        f"Shift starting {open_in.strftime('%b %d')} is longer than 24 hours. Worth checking."
-                    )
+                    warnings.append(Note(
+                        f"Shift starting {open_in.strftime('%b %d')} is longer than 24 hours. Worth checking.",
+                        "over_24_hours", day=open_in.date().isoformat()))
                 shifts.append((start_local, end_local))
             open_in = None
     if open_in is not None:
-        warnings.append(
-            f"Clock-in on {open_in.strftime('%b %d at %I:%M %p')} has no clock-out yet and was not counted."
-        )
+        warnings.append(Note(
+            f"Clock-in on {open_in.strftime('%b %d at %I:%M %p')} has no clock-out yet and was not counted.",
+            "still_clocked_in", at=_stamp(open_in)))
     return shifts, warnings
 
 
@@ -164,7 +179,8 @@ def check_pay(
 
     shifts, warnings = pair_shifts(entries)
     if (period_end - period_start).days + 1 > 14:
-        warnings.append("This pay period is longer than two weeks. Stubborn is built for weekly and biweekly pay.")
+        warnings.append(Note("This pay period is longer than two weeks. Stubborn is built for weekly and biweekly pay.",
+                             "long_period"))
 
     rate_below_minimum = rate < min_wage
     effective_rate = max(rate, min_wage)  # nobody is expected to be paid under the minimum
@@ -196,7 +212,8 @@ def check_pay(
     explained = Decimal("0")
 
     if logged == 0:
-        warnings.append("No logged hours were found inside this pay period, so there is nothing to compare.")
+        warnings.append(Note("No logged hours were found inside this pay period, so there is nothing to compare.",
+                             "no_hours"))
 
     ot_short = max(expected_ot - overtime_paid, Decimal("0"))
     ot_missing = Decimal("0")
@@ -317,5 +334,6 @@ def check_pay(
             "owed": _plain(owed),
         },
         "findings": findings,
-        "warnings": warnings,
+        "warnings": [str(w) for w in warnings],
+        "warningDetails": [{"code": getattr(w, "code", "other"), "params": getattr(w, "params", {})} for w in warnings],
     }

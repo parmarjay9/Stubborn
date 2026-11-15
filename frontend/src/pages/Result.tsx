@@ -4,6 +4,7 @@ import OwedCard from '../components/OwedCard'
 import PaydayReminder from '../components/PaydayReminder'
 import StepTrail from '../components/StepTrail'
 import { store } from '../lib/store'
+import { warningTexts } from '../lib/warnings'
 import { t } from '../lib/i18n'
 
 export default function Result() {
@@ -43,7 +44,7 @@ export default function Result() {
           {t('Heads up: your hour log was changed at entry {n}, so it is weaker as a record.', { n: check.log.brokenAtSeq ?? '' })}
         </p>
       )}
-      {check.warnings.map((warning) => (
+      {warningTexts(check).map((warning) => (
         <p key={warning} className="rounded-2xl bg-warn-soft px-4 py-3 text-sm text-warn">
           {warning}
         </p>

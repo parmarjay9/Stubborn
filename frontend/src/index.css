@@ -71,6 +71,13 @@ label {
   outline-offset: 3px;
 }
 
+/* A grid with no explicit columns gets one column that can shrink to the
+   screen. Without this, one long word or link makes the whole column wider
+   than the phone. */
+.grid:not([class*='grid-cols']) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 @layer components {
   .btn {
     @apply inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-xl border-2 border-ink px-5 font-display text-lg font-extrabold shadow-hard transition-[transform,box-shadow] duration-100 active:translate-x-[3px] active:translate-y-[3px] active:shadow-none disabled:opacity-50 disabled:active:translate-x-0 disabled:active:translate-y-0 disabled:active:shadow-hard;

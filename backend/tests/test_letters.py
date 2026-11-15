@@ -43,3 +43,13 @@ def test_spanish_template_uses_only_engine_numbers():
     letters = template_letters(CHECK, WORKER, "es")
     assert "$123.25" in letters["managerMessage"] and "posiblemente" in letters["managerMessage"]
     assert only_engine_numbers(letters, CHECK)
+
+
+def test_dates_are_written_out():
+    from letters.handler import period_text
+    assert period_text({"start": "2026-11-08", "end": "2026-11-14"}) == "November 8 to 14, 2026"
+    assert period_text({"start": "2026-11-08", "end": "2026-11-14"}, "es") == "del 8 al 14 de noviembre de 2026"
+    assert period_text({"start": "2026-10-25", "end": "2026-11-07"}) == "October 25 to November 7, 2026"
+    assert period_text({"start": "2026-12-27", "end": "2027-01-09"}, "es") == "del 27 de diciembre de 2026 al 9 de enero de 2027"
+    assert "November 8 to 14, 2026" in template_letters(CHECK, WORKER)["managerMessage"]
+    assert "del 8 al 14 de noviembre de 2026" in template_letters(CHECK, WORKER, "es")["managerMessage"]

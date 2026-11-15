@@ -179,9 +179,9 @@ function NextStep() {
   const done = [Boolean(hasHours), Boolean(check), acted]
   return (
     <section className="card grid gap-3" aria-label={t('Your next step')}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="tag text-muted">{t('You are here')}</p>
-        <ol className="flex gap-1.5">
+        <ol className="flex flex-wrap gap-1.5">
           {['Record', 'Catch', 'Act'].map((name, index) => (
             <li key={name} className={`tag rounded border-2 px-1.5 py-0.5 ${done[index] ? 'border-accent bg-accent-soft text-accent-dark' : 'border-ink/25 text-muted'}`}>
               {done[index] ? '✓ ' : ''}

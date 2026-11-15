@@ -186,3 +186,11 @@ def test_every_finding_carries_its_numbers_for_translation():
     demo = cases[0]["findings"]
     assert demo[0]["params"] == {"missing": "5.5", "logged": "43.5", "paid": "38"}
     assert demo[-1]["params"]["owed"] == "$123.25"
+
+
+def test_warnings_carry_codes_for_translation():
+    entries = make_entries(FORTY + [("2026-11-14T08:00:00-07:00", None)])
+    result = run(entries, stub())
+    assert result["warningDetails"] == [{"code": "still_clocked_in", "params": {"at": "2026-11-14T08:00"}}]
+    empty = run([], stub())
+    assert [w["code"] for w in empty["warningDetails"]] == ["no_hours"]

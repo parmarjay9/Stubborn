@@ -85,6 +85,7 @@ export interface CheckResult {
   }
   findings: Finding[]
   warnings: string[]
+  warningDetails?: { code: string; params: Record<string, string> }[]
   log: VerifyResult
 }
 

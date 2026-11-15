@@ -74,10 +74,25 @@ def _money(value):
     return "${:,.2f}".format(Decimal(str(value)))
 
 
-def _date(iso):
+MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+             "October", "November", "December"]
+MONTHS_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+             "octubre", "noviembre", "diciembre"]
+
+
+def period_text(period, lang="en"):
+    """'November 8 to 14, 2026' / 'del 8 al 14 de noviembre de 2026', spanning months and years when needed."""
     from datetime import date
-    day = date.fromisoformat(iso)
-    return f"{day.strftime('%b')} {day.day}, {day.year}"
+    a, b = date.fromisoformat(period["start"]), date.fromisoformat(period["end"])
+    if lang == "es":
+        if (a.year, a.month) == (b.year, b.month):
+            return f"del {a.day} al {b.day} de {MONTHS_ES[b.month - 1]} de {b.year}"
+        start = f"{a.day} de {MONTHS_ES[a.month - 1]}" + (f" de {a.year}" if a.year != b.year else "")
+        return f"del {start} al {b.day} de {MONTHS_ES[b.month - 1]} de {b.year}"
+    if (a.year, a.month) == (b.year, b.month):
+        return f"{MONTHS_EN[a.month - 1]} {a.day} to {b.day}, {b.year}"
+    start = f"{MONTHS_EN[a.month - 1]} {a.day}" + (f", {a.year}" if a.year != b.year else "")
+    return f"{start} to {MONTHS_EN[b.month - 1]} {b.day}, {b.year}"
 
 
 def _hours(value):
@@ -93,7 +108,7 @@ def template_letters(check, worker, lang="en"):
     name = worker.get("name") or "[your name]"
     employer = worker.get("employer") or "the employer"
     manager = worker.get("managerName") or "there"
-    owed, span = _money(totals["owed"]), f"{_date(period['start'])} to {_date(period['end'])}"
+    owed, span = _money(totals["owed"]), period_text(period)
     logged, paid = _hours(totals["loggedHours"]), _hours(totals["paidHours"])
     details = " ".join(f["label"] + "." for f in check.get("findings", []) if f["code"] not in ("total", "ok"))
     return {
@@ -118,18 +133,18 @@ def template_letters_es(check, worker):
     name = worker.get("name") or "[su nombre]"
     employer = worker.get("employer") or "el empleador"
     manager = worker.get("managerName") or ""
-    owed, span = _money(totals["owed"]), f"{period['start']} al {period['end']}"
+    owed, span = _money(totals["owed"]), period_text(period, "es")
     logged, paid = _hours(totals["loggedHours"]), _hours(totals["paidHours"])
     return {
         "managerMessage": (
-            f"Hola{(' ' + manager) if manager else ''},\n\nEstaba revisando mi talón de pago del {span} y creo que puede faltar algo. "
+            f"Hola{(' ' + manager) if manager else ''},\n\nEstaba revisando mi talón de pago {span} y creo que puede faltar algo. "
             f"Mi propio registro muestra {logged} horas en ese periodo y el talón muestra {paid} horas pagadas. "
             f"Según mis cuentas, posiblemente se me deben {owed}.\n\n"
             f"¿Podría revisar los registros y avisarme? Con gusto le comparto mi registro de horas.\n\nGracias,\n{name}"
         ),
         "complaintSummary": (
             f"{name} trabajó para {employer} como empleado por hora a {_money(check['rate'])} por hora. "
-            f"Para el periodo de pago del {span}, el registro de horas del trabajador muestra {logged} horas trabajadas. "
+            f"Para el periodo de pago {span}, el registro de horas del trabajador muestra {logged} horas trabajadas. "
             f"El talón de pago muestra {paid} horas pagadas y un pago bruto de {_money(totals['grossPay'])}. "
             f"El pago bruto esperado por las horas registradas es {_money(totals['expectedGross'])}. "
             f"La cantidad que posiblemente se debe es {owed}."
@@ -143,7 +158,7 @@ def _ask_claude(check, worker, lang="en"):
     client = AnthropicBedrockMantle(aws_region=config.BEDROCK_REGION, timeout=8.0, max_retries=0)
     facts = {
         "worker": {k: worker.get(k) for k in ("name", "employer", "managerName") if worker.get(k)},
-        "payPeriod": check["payPeriod"],
+        "payPeriod": period_text(check["payPeriod"], lang),
         "hourlyRate": "$" + check["rate"],
         "totals": check["totals"],
         "findings": [{"label": f["label"], "math": f["math"]} for f in check["findings"]],

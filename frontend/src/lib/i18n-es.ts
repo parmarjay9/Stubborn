@@ -6,14 +6,14 @@ export const ES: Record<string, string> = {
   // agent
   'Fill in the claim form for me': 'Llenar el formulario de reclamo por mí',
   "Add your name and your employer's name above first.": 'Primero agregue arriba su nombre y el de su empleador.',
-  'Showing a recorded run.': 'Mostrando una ejecución grabada.',
-  'Showing a sample run. The live agent is not connected right now.': 'Mostrando una ejecución de ejemplo. El agente en vivo no está conectado en este momento.',
+  'Showing a recorded run.': 'Mostrando un recorrido grabado.',
+  'Showing a sample run. The live agent is not connected right now.': 'Mostrando un recorrido de ejemplo. El agente en vivo no está conectado en este momento.',
   'Starting the agent...': 'Iniciando el agente...',
   "Live view of the agent's browser": 'Vista en vivo del navegador del agente',
   'Stopped before submit. Nothing was sent.': 'Se detuvo antes de enviar. No se envió nada.',
   'Read every box yourself. You decide whether to send it.': 'Revise cada casilla usted mismo. Usted decide si lo envía.',
   'Review the filled form': 'Revisar el formulario lleno',
-  'Run it again': 'Hacerlo otra vez',
+  'Run it again': 'Volver a hacerlo',
   'Opening the wage claim form...': 'Abriendo el formulario de reclamo de salario...',
   'Filling in your name and contact details...': 'Llenando su nombre y datos de contacto...',
   'Filling employer details...': 'Llenando los datos del empleador...',
@@ -23,8 +23,8 @@ export const ES: Record<string, string> = {
   'Stopped before submit for your review': 'Se detuvo antes de enviar para que usted lo revise',
 
   // breakdown and result
-  'How we got there': 'Cómo llegamos a esto',
-  'Tap a line to see the math': 'Toque una línea para ver las cuentas',
+  'How we got there': 'Cómo lo calculamos',
+  'Tap a line to see the math': 'Toque una línea para ver el cálculo',
   'Your result': 'Su resultado',
   'No pay stub checked yet': 'Todavía no ha revisado un talón de pago',
   'Snap a photo of your stub and your result will show up here.': 'Tome una foto de su talón y su resultado aparecerá aquí.',
@@ -36,12 +36,12 @@ export const ES: Record<string, string> = {
   'File a wage claim': 'Presentar un reclamo de salario',
   'See all pay periods': 'Ver todos los periodos de pago',
   'Check another stub': 'Revisar otro talón',
-  'Stubborn pay check': 'Revisión de pago de Stubborn',
+  'Stubborn pay check': 'Revisión de pago',
   '{start} to {end}': '{start} al {end}',
-  'Worth asking': 'Vale preguntar',
+  'Worth asking': 'Conviene preguntar',
   'All good': 'Todo bien',
   'Your log': 'Su registro',
-  'Stub paid': 'Talón pagó',
+  'Stub paid': 'Pagado en el talón',
   'Expected pay': 'Pago esperado',
   'Stub gross pay': 'Pago bruto del talón',
   'possibly owed to you this pay period': 'que posiblemente se le debe en este periodo de pago',
@@ -60,9 +60,9 @@ export const ES: Record<string, string> = {
   'Log verified, 1 entry, untouched': 'Registro verificado, 1 entrada, sin cambios',
   'Log verified, {n} entries, untouched': 'Registro verificado, {n} entradas, sin cambios',
   'Your first clock-in starts the chain.': 'Su primera entrada empieza la cadena.',
-  'Every entry is fingerprinted and chained to the one before it.': 'Cada entrada tiene una huella y está encadenada a la anterior.',
+  'Every entry is fingerprinted and chained to the one before it.': 'Cada entrada tiene una huella digital y está encadenada a la anterior.',
   'Try it': 'Pruébelo',
-  'Go on, try to fudge an entry': 'Adelante, intente alterar una entrada',
+  'Go on, try to fudge an entry': 'Ándele, intente alterar una entrada',
   IN: 'ENTRADA',
   OUT: 'SALIDA',
   'Each entry gets a fingerprint (the # code) made from its own details plus the fingerprint before it.':
@@ -83,8 +83,8 @@ export const ES: Record<string, string> = {
   'Punching...': 'Marcando...',
   'Clock out': 'Marcar salida',
   'Clock in': 'Marcar entrada',
-  'On the clock since {time}': 'Trabajando desde las {time}',
-  'You are off the clock. Tap when your shift starts.': 'No está marcado. Toque cuando empiece su turno.',
+  'On the clock since {time}': 'En turno desde las {time}',
+  'You are off the clock. Tap when your shift starts.': 'Está fuera de turno. Toque cuando empiece su turno.',
 
   // confirm fields and stub upload
   'Please check this.': 'Por favor revise esto.',
@@ -103,7 +103,7 @@ export const ES: Record<string, string> = {
     'Asegúrese de que las horas, la tarifa, el pago bruto y las fechas del periodo salgan en la foto.',
   'Take a photo': 'Tomar una foto',
   'Choose a picture': 'Elegir una imagen',
-  'Type the numbers in instead': 'Mejor escribir los números',
+  'Type the numbers in instead': 'Escribir los números a mano',
 
   // check page
   'Check my pay stub': 'Revisar mi talón de pago',
@@ -143,13 +143,13 @@ export const ES: Record<string, string> = {
   'Claim summary': 'Resumen del reclamo',
 
   // payday reminder
-  'Payday: snap your pay stub': 'Día de pago: tome foto de su talón',
+  'Payday: snap your pay stub': 'Día de pago: tome una foto de su talón',
   'Check your stub against your own hours in Stubborn:': 'Compare su talón con sus propias horas en Stubborn:',
   'Never miss a check': 'No se pierda ninguna revisión',
   'Payday reminder': 'Recordatorio del día de pago',
   "Adds a repeating reminder to your phone's calendar at 5 PM on payday.": 'Agrega un recordatorio que se repite en el calendario de su teléfono a las 5 PM del día de pago.',
   'Payday is on': 'El día de pago es el',
-  'How often': 'Cada cuánto',
+  'How often': 'Frecuencia',
   'Every week': 'Cada semana',
   'Every 2 weeks': 'Cada 2 semanas',
   'Add to my calendar': 'Agregar a mi calendario',
@@ -169,7 +169,7 @@ export const ES: Record<string, string> = {
   'Go back': 'Regresar',
   'Setting up the sample account...': 'Preparando la cuenta de ejemplo...',
   'Sample account: {name}': 'Cuenta de ejemplo: {name}',
-  Exit: 'Salir',
+  Exit: 'Salida',
 
   // shell and nav
   'Stay stubborn.': 'No se rinda.',
@@ -189,10 +189,10 @@ export const ES: Record<string, string> = {
 
   // shift list
   'A blank timecard': 'Una tarjeta de horas en blanco',
-  'Tap Clock in when your shift starts. Your hours will stack up here.': 'Toque Marcar entrada cuando empiece su turno. Sus horas se irán sumando aquí.',
+  'Tap Clock in when your shift starts. Your hours will stack up here.': 'Toque "Marcar entrada" cuando empiece su turno. Sus horas se irán sumando aquí.',
   'Timecard, week of': 'Tarjeta de horas, semana del',
   hours: 'horas',
-  'now (on the clock)': 'ahora (trabajando)',
+  'now (on the clock)': 'ahora (en turno)',
   'Not sent yet': 'Sin enviar',
   'Location stamped': 'Con ubicación',
   'means the entry carries a location stamp.': 'significa que la entrada tiene ubicación.',
@@ -217,7 +217,7 @@ export const ES: Record<string, string> = {
   'A short, polite note that asks them to check the records. Most pay mix-ups get fixed this way.':
     'Un mensaje corto y amable que le pide revisar los registros. La mayoría de los errores de pago se arreglan así.',
   'Writing...': 'Escribiendo...',
-  'Write it again': 'Escribirlo otra vez',
+  'Write it again': 'Volver a escribirlo',
   'Writing your note': 'Escribiendo su mensaje',
   'Draft my note': 'Redactar mi mensaje',
   '2. Make an evidence packet': '2. Hacer un paquete de pruebas',
@@ -238,7 +238,7 @@ export const ES: Record<string, string> = {
   'Paid in full for your logged hours': 'Pagado completo por sus horas registradas',
   'See details': 'Ver detalles',
   'Could not load your history.': 'No se pudo cargar su historial.',
-  'The reset did not work.': 'No se pudo reiniciar.',
+  'The reset did not work.': 'No se pudo restablecer.',
   'Your record, week by week': 'Su registro, semana por semana',
   'Hours vs pay stubs': 'Horas contra talones de pago',
   'Every pay period you have checked, lined up against your own log.': 'Cada periodo de pago que ha revisado, comparado con su propio registro.',
@@ -251,8 +251,8 @@ export const ES: Record<string, string> = {
   'Nothing to compare yet': 'Todavía no hay nada que comparar',
   'Clock in for a few shifts, then check a pay stub. Each pay period will show up here with your hours next to what the stub paid.':
     'Marque algunos turnos y luego revise un talón de pago. Cada periodo aparecerá aquí con sus horas junto a lo que pagó el talón.',
-  'Resetting...': 'Reiniciando...',
-  'Reset the sample account to its starting point': 'Reiniciar la cuenta de ejemplo',
+  'Resetting...': 'Restableciendo...',
+  'Reset the sample account to its starting point': 'Restablecer la cuenta de ejemplo a como empezó',
 
   // home
   Out: 'Sal.',
@@ -262,7 +262,7 @@ export const ES: Record<string, string> = {
   Rate: 'Tarifa',
   'Please check': 'Revise',
   'Start your own timesheet. It takes one tap.': 'Empiece su propia hoja de horas. Solo hace falta un toque.',
-  'Your hours are on the record. Got a pay stub? Check it against your log.': 'Sus horas están registradas. ¿Tiene un talón de pago? Compárelo con su registro.',
+  'Your hours are on the record. Got a pay stub? Check it against your log.': 'Sus horas ya están registradas. ¿Tiene un talón de pago? Compárelo con su registro.',
   'Your last check found {owed} possibly owed. Worth asking about.': 'Su última revisión encontró {owed} que posiblemente se le deben. Vale la pena preguntar.',
   'You are all caught up. Keep clocking in.': 'Está al día. Siga marcando sus turnos.',
   'Open my hours': 'Abrir mis horas',
@@ -272,8 +272,8 @@ export const ES: Record<string, string> = {
   'Your hours.': 'Sus horas.',
   'Your proof.': 'Su prueba.',
   'Your pay.': 'Su pago.',
-  'Your employer keeps the timeclock.': 'Su empleador lleva el reloj de entrada.',
-  'Now you keep one too.': 'Ahora usted también lleva uno.',
+  'Your employer keeps the timeclock.': 'Su empleador tiene el reloj checador.',
+  'Now you keep one too.': 'Ahora usted también tiene uno.',
   'Stubborn checks your pay stub against your own record and helps you ask about anything missing. Politely. Persistently.':
     'Stubborn compara su talón de pago con su propio registro y le ayuda a preguntar por lo que falte. Con cortesía. Con constancia.',
   'Example pay check': 'Ejemplo de revisión',
@@ -281,7 +281,7 @@ export const ES: Record<string, string> = {
   'Just looking?': '¿Solo está mirando?',
   'Try the sample account': 'Pruebe la cuenta de ejemplo',
   'Step into the shoes of {name}, a made-up warehouse worker. Four weeks of hours are already logged and three pay stubs are already checked, so you can see hours against pay stubs right away.':
-    'Póngase en el lugar de {name}, un trabajador de almacén inventado. Ya tiene cuatro semanas de horas registradas y tres talones revisados, así que puede ver las horas contra los talones de inmediato.',
+    'Póngase en el lugar de {name}, un trabajador de almacén ficticio. Ya tiene cuatro semanas de horas registradas y tres talones revisados, así que puede ver las horas contra los talones de inmediato.',
   'Open the sample account': 'Abrir la cuenta de ejemplo',
   'How it works': 'Cómo funciona',
   'Six small steps. Three of them are one tap.': 'Seis pasos pequeños. Tres de ellos son un solo toque.',
@@ -297,16 +297,16 @@ export const ES: Record<string, string> = {
     'Hecho para trabajadores por hora sin propinas en Arizona, con una sola tarifa por hora y un solo empleador. Revisa el tiempo extra federal (más de 40 horas en una semana laboral) y el salario mínimo de Arizona. Todavía no cubre propinas, salarios fijos, reglas de descansos ni otros estados. El registro muestra que no se cambió después. No puede probar que usted estaba trabajando.',
   'Every shift': 'Cada turno',
   'Tap in when you start': 'Marque al empezar',
-  'Hit the big Clock in button when your shift begins.': 'Toque el botón grande Marcar entrada cuando empiece su turno.',
+  'Hit the big Clock in button when your shift begins.': 'Toque el botón grande "Marcar entrada" cuando empiece su turno.',
   'We stamp the time and your location, and send a copy to the server.': 'Guardamos la hora y su ubicación, y enviamos una copia al servidor.',
   '2 seconds': '2 segundos',
   'Tap out when you leave': 'Marque al salir',
-  'Hit Clock out. That is the whole job.': 'Toque Marcar salida. Eso es todo.',
+  'Hit Clock out. That is the whole job.': 'Toque "Marcar salida". Eso es todo.',
   'Each entry is fingerprinted and chained to the one before, so nobody can quietly edit it later. Not your boss, not you, not us.':
     'Cada entrada lleva una huella y se encadena a la anterior, así que nadie puede cambiarla a escondidas después. Ni su jefe, ni usted, ni nosotros.',
   'On payday': 'El día de pago',
   'Check a pay stub': 'Revisar un talón de pago',
-  'Snap your pay stub': 'Tome foto de su talón',
+  'Snap your pay stub': 'Tome una foto de su talón',
   'Take one photo of the stub, flat and in good light.': 'Tome una foto del talón, plano y con buena luz.',
   'We read the hours, the rate, the gross pay and the pay period off the page.': 'Leemos de la página las horas, la tarifa, el pago bruto y el periodo de pago.',
   '10 seconds': '10 segundos',
@@ -315,7 +315,7 @@ export const ES: Record<string, string> = {
   'Anything we are unsure about is marked in amber. You have the final say.': 'Lo que no tengamos claro se marca en ámbar. Usted tiene la última palabra.',
   '20 seconds': '20 segundos',
   'See what may be missing': 'Vea qué podría faltar',
-  'Read the result. Tap any line to see the math.': 'Lea el resultado. Toque cualquier línea para ver las cuentas.',
+  'Read the result. Tap any line to see the math.': 'Lea el resultado. Toque cualquier línea para ver el cálculo.',
   'We line your log up against the stub, apply overtime and minimum wage, and show the gap to the cent.':
     'Comparamos su registro con el talón, aplicamos el tiempo extra y el salario mínimo, y mostramos la diferencia al centavo.',
   Instant: 'Al instante',
@@ -345,7 +345,7 @@ export const ES: Record<string, string> = {
   'Could not load your hours.': 'No se pudieron cargar sus horas.',
   'The demo switch did not work.': 'El interruptor de demostración no funcionó.',
   'My hours': 'Mis horas',
-  'Your timeclock, not theirs. One tap in, one tap out.': 'Su reloj de entrada, no el de ellos. Un toque para entrar, uno para salir.',
+  'Your timeclock, not theirs. One tap in, one tap out.': 'Su reloj checador, no el de ellos. Un toque al entrar, otro al salir.',
   'No signal right now': 'No hay señal en este momento',
   'Sending saved taps...': 'Enviando marcas guardadas...',
   '1 tap is saved on this phone with the time you tapped.': '1 marca está guardada en este teléfono con la hora en que tocó.',
@@ -411,3 +411,41 @@ export const ES: Record<string, string> = {
   'Link:': 'Enlace:',
   'Made with Stubborn, built by': 'Hecho con Stubborn, creado por',
 }
+
+// Rules engine warnings, worded from their codes (see lib/warnings.ts)
+Object.assign(ES, {
+  'Entry {seq} has an unreadable time and was skipped.': 'La entrada {seq} tiene una hora que no se puede leer y no se contó.',
+  'Clock-in on {when} has no clock-out and was not counted.': 'La entrada del {when} no tiene salida y no se contó.',
+  'Clock-out on {when} has no clock-in and was not counted.': 'La salida del {when} no tiene entrada y no se contó.',
+  'Shift on {day} ends before it starts and was not counted.': 'El turno del {day} termina antes de empezar y no se contó.',
+  'Shift starting {day} is longer than 24 hours. Worth checking.': 'El turno que empieza el {day} dura más de 24 horas. Conviene revisarlo.',
+  'Clock-in on {when} has no clock-out yet and was not counted.': 'La entrada del {when} todavía no tiene salida y no se contó.',
+  'This pay period is longer than two weeks. Stubborn is built for weekly and biweekly pay.':
+    'Este periodo de pago dura más de dos semanas. Stubborn está hecho para pagos semanales y quincenales.',
+  'No logged hours were found inside this pay period, so there is nothing to compare.':
+    'No hay horas registradas dentro de este periodo de pago, así que no hay nada que comparar.',
+  '{day} at {time}': '{day} a las {time}',
+  // practice claim form
+  'Demo wage claim form. Not a government website.': 'Formulario de reclamo de demostración. No es un sitio del gobierno.',
+  'Practice wage claim form': 'Formulario de práctica para reclamo de salario',
+  'Part of the Stubborn demo at sunhacks 2026. Nothing typed here is sent or saved anywhere.':
+    'Parte de la demostración de Stubborn en sunhacks 2026. Nada de lo que escriba aquí se envía ni se guarda.',
+  'This is a demo form. Nothing was sent.': 'Este es un formulario de demostración. No se envió nada.',
+  'To file a real unpaid wage claim in Arizona, use the Unpaid Wage Claim Form from the Labor Department of the Industrial Commission of Arizona.':
+    'Para presentar un reclamo real de salario no pagado en Arizona, use el formulario de reclamo (Unpaid Wage Claim Form) del Departamento Laboral de la Comisión Industrial de Arizona.',
+  'Back to the form': 'Volver al formulario',
+  'Full name': 'Nombre completo',
+  Phone: 'Teléfono',
+  Email: 'Correo electrónico',
+  'Employer name': 'Nombre del empleador',
+  'Hourly rate': 'Tarifa por hora',
+  'Amount possibly owed': 'Cantidad que posiblemente se debe',
+  'Hours worked (from your own log)': 'Horas trabajadas (de su propio registro)',
+  'Hours paid on the pay stub': 'Horas pagadas en el talón de pago',
+  'Description of the claim': 'Descripción del reclamo',
+  Submit: 'Enviar',
+  'Submit is switched off while the agent fills this in. The worker reviews it first.':
+    'El botón Enviar está apagado mientras el agente llena esto. El trabajador lo revisa primero.',
+  'Demo page built by': 'Página de demostración hecha por',
+  'Not affiliated with any government agency.': 'No está afiliada a ninguna agencia del gobierno.',
+})

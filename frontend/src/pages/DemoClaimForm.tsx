@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { LangSwitch, t } from '../lib/i18n'
 
 // A practice form for the web agent to fill. It is deliberately plain and
 // carries no agency name, seal or colors. It sends nothing anywhere.
@@ -32,24 +33,26 @@ export default function DemoClaimForm() {
   return (
     <div className="min-h-dvh bg-white">
       <div role="alert" className="bg-warn-soft px-4 py-3 text-center font-bold text-warn">
-        Demo wage claim form. Not a government website.
+        {t('Demo wage claim form. Not a government website.')}
       </div>
 
       <main className="mx-auto max-w-xl px-4 py-6">
-        <h1 className="text-2xl font-black tracking-tight">Practice wage claim form</h1>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="min-w-0 text-2xl font-black tracking-tight">{t('Practice wage claim form')}</h1>
+          {!agentMode && <LangSwitch />}
+        </div>
         <p className="mt-1 text-sm text-muted">
-          Part of the Stubborn demo at sunhacks 2026. Nothing typed here is sent or saved anywhere.
+          {t('Part of the Stubborn demo at sunhacks 2026. Nothing typed here is sent or saved anywhere.')}
         </p>
 
         {sent ? (
           <div className="mt-6 rounded-2xl bg-accent-soft p-5 text-accent-dark">
-            <p className="font-bold">This is a demo form. Nothing was sent.</p>
+            <p className="font-bold">{t('This is a demo form. Nothing was sent.')}</p>
             <p className="mt-1 text-sm">
-              To file a real unpaid wage claim in Arizona, use the Unpaid Wage Claim Form from the Labor Department of
-              the Industrial Commission of Arizona.
+              {t('To file a real unpaid wage claim in Arizona, use the Unpaid Wage Claim Form from the Labor Department of the Industrial Commission of Arizona.')}
             </p>
             <button type="button" className="mt-3 text-sm font-semibold underline" onClick={() => setSent(false)}>
-              Back to the form
+              {t('Back to the form')}
             </button>
           </div>
         ) : (
@@ -63,7 +66,7 @@ export default function DemoClaimForm() {
             {FIELDS.map((field) => (
               <div key={field.name} className={field.half ? 'col-span-2 sm:col-span-1' : 'col-span-2'}>
                 <label htmlFor={field.name} className="label">
-                  {field.label}
+                  {t(field.label)}
                 </label>
                 <input
                   id={field.name}
@@ -77,7 +80,7 @@ export default function DemoClaimForm() {
             ))}
             <div className="col-span-2">
               <label htmlFor="summary" className="label">
-                Description of the claim
+                {t('Description of the claim')}
               </label>
               <textarea
                 id="summary"
@@ -91,11 +94,11 @@ export default function DemoClaimForm() {
 
             <div className="col-span-2 grid gap-2">
               <button type="submit" className="btn btn-primary" disabled={agentMode}>
-                Submit
+                {t('Submit')}
               </button>
               {agentMode && (
                 <p className="text-center text-sm text-muted">
-                  Submit is switched off while the agent fills this in. The worker reviews it first.
+                  {t('Submit is switched off while the agent fills this in. The worker reviews it first.')}
                 </p>
               )}
             </div>
@@ -103,9 +106,9 @@ export default function DemoClaimForm() {
         )}
 
         <footer className="mt-10 border-t border-line pt-5 text-center text-sm text-muted">
-          Demo page built by{' '}
+          {t('Demo page built by')}{' '}
           <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline">Jay Parmar</a>{' '}
-          at sunhacks 2026. Not affiliated with any government agency.
+          {t('at')} sunhacks 2026. {t('Not affiliated with any government agency.')}
         </footer>
       </main>
     </div>
