@@ -2,31 +2,54 @@
 
 **Your hours. Your proof. Your pay.**
 
-A mobile-first web app that helps hourly workers catch unpaid wages. Built solo by Jay Parmar at sunhacks 2026 (ASU Tempe).
+Stubborn keeps a record of your work hours that shows if anyone changes it, checks your pay stub against it, and helps you ask for wages you may be owed.
 
-1. **Record.** Tap to clock in and out. Each entry is stamped with time and location, hashed with SHA-256 and chained to the entry before it. The server recomputes every hash on receipt, so the log cannot be edited later without the chain breaking.
-2. **Catch.** Photograph a pay stub. Amazon Textract reads the hours, rate and gross pay. The worker confirms the values, and a tested rules engine compares the stub to the worker's own log and itemizes what is possibly owed.
-3. **Act.** Claude on Amazon Bedrock drafts a polite note to the manager and a claim summary, using only numbers from the rules engine. A TinyFish web agent fills in a wage claim form and stops before submitting so the worker can review it.
+- **Live:** https://getstubborn.club
+- Built solo by [Jay Parmar](https://jayparmar9.vercel.app) at [sunhacks 2026](https://sunhacks.io), ASU Tempe.
 
 Stubborn flags possible underpayment. It is not legal advice.
 
-### Also built in
+## How it works
 
-- **Clock in without signal.** Taps are hashed and chained on the phone, saved there when there is no connection, and sent in order once the phone is back online. The server still checks every hash and records when it really got each one.
-- **Evidence packet.** One page per pay check with a QR code (`/v/<id>`). Whoever opens it recomputes every fingerprint in their own browser, sees the server's check, and can save it as a PDF. If the log no longer matches its nightly seal, the packet says it was changed. The link is read-only.
-- **Nightly locked seal.** At 11:59 PM Arizona time, a Lambda writes every log's newest fingerprint to an S3 bucket with Object Lock (governance mode, 30 days). Device ids are salted and hashed in the seal. This catches even a chain that someone rewrote with fresh hashes.
-- **Device secrets.** Each phone has a private secret next to its device id. The first phone to use a log registers it, and every read or write of that log must present it, so a device id seen in a share link gives no access.
-- **Spanish.** EN/ES switch on every screen and the packet. The rules engine returns each finding's numbers separately, so numbers never pass through translation. Claude writes the letters in Spanish, with the same dollar-amount check.
-- **Payday reminder.** A repeating calendar event (.ics) for weekly or biweekly paydays.
-- **Pricing page.** A freemium model at `/pricing`: Free for the log and basic checks, Plus at $3 a month for the parts that cost money to run, and Partners for unions and clinics that cover their members. It is a preview: payments are not switched on and nothing is locked. "Notify me" and "Talk to us" open a short form that saves an email (and organization, for Partners) to a DynamoDB waitlist. The Check page shows how many of the month's 2 free checks are used (`GET /usage`, counted in Arizona time) and links to Plus when they run out; it does not block anyone yet. Clocking in is never limited. Card details are never collected in the app; paid signup would use a hosted payment page such as Stripe Checkout. To see the list:
+1. **Record.** Tap to clock in and out. Each tap is stamped with the time and location, given a SHA-256 fingerprint and chained to the one before it. The server checks every fingerprint when it arrives, so nobody can edit the log later without it showing. Works without signal.
+2. **Catch.** Take a photo of your pay stub. Amazon Textract reads the hours, rate, gross pay and pay period, you confirm them, and a rules engine compares the stub to your log. It applies federal overtime and the Arizona minimum wage and shows what may be missing, line by line.
+3. **Act.** Get a polite note for your manager (written by Claude on Amazon Bedrock, or a template), an evidence packet anyone can verify with a QR code, and a wage claim form filled in by a TinyFish web agent that stops before submitting.
 
-  ```bash
-  aws dynamodb scan --region us-west-2 --table-name $(aws cloudformation describe-stack-resource --stack-name stubborn --logical-resource-id WaitlistTable --query StackResourceDetail.PhysicalResourceId --output text) --query 'Items[].[email.S,plan.S,organization.S,joinedAt.S]' --output table
-  ```
+Also included: a History page of hours against pay stubs, a sample account, full Spanish, a payday calendar reminder, and a pricing page with a waitlist.
+
+## Try it
+
+1. Open https://getstubborn.club and tap **Open the sample account**. You browse as Alex Rivera, a made-up warehouse worker with four weeks of hours and three checked pay stubs.
+2. **Check** tab: tap **Use this sample pay stub**. The result is **$123.25** possibly owed.
+3. **Act** tab: draft the note, make the evidence packet, and run the claim form agent.
+4. To watch the log catch an edit, open `/log?tamper=1` in the sample account and flip the switch. It is hidden otherwise to keep the page simple.
+
+Each browser gets its own copy of the sample data, and **Exit** in the yellow bar returns to your own account.
+
+## What's inside
+
+| Part | What it does |
+|---|---|
+| React + TypeScript + Vite + Tailwind | Mobile-first installable web app, in English and Spanish. Hosted on AWS Amplify. |
+| API Gateway + 11 Lambda functions (Python 3.12) | All endpoints, defined in `backend/template.yaml` with AWS SAM. Every route is rate limited. |
+| DynamoDB | Hours, pay checks, agent runs, share links, device secret hashes and the waitlist. |
+| S3 | Pay stub photos, deleted after 7 days. |
+| S3 Object Lock + EventBridge Scheduler | A nightly sealed copy of every log's latest fingerprint that cannot be changed or deleted for 30 days. |
+| Amazon Textract | Reads the stub with Queries. Fields under 80% confidence are highlighted for the worker to check. |
+| Rules engine (`backend/src/rules/engine.py`) | Exact decimal math, no AI. Pairs shifts, splits them by workweek, applies overtime and minimum wage, lists each finding. |
+| Amazon Bedrock (Claude Sonnet 4.6) | Writes the manager note and claim summary. Any dollar amount the engine did not produce is rejected, and the app falls back to a template. |
+| TinyFish Web Agent API | Fills in the claim form from a background Lambda; the app shows each step live. |
+| Systems Manager Parameter Store | Holds the TinyFish key, encrypted. |
+
+**The hash chain.** Each entry's fingerprint covers its details (keys sorted, coordinates as fixed 6-decimal text) plus the previous fingerprint. The same code exists in `frontend/src/lib/hashchain.ts` and `backend/src/common/hashchain.py`, and both test suites pin the same known fingerprint.
+
+**The agent never submits.** The goal forbids it, the form opens with Submit switched off for the agent, and the app stops waiting after 90 seconds. If a live run fails or runs long, the app replays a real recorded run (`demo/fallback/run.json`: 11 fields in 69 seconds, no submit) and says so.
+
+**Device secrets.** Each phone keeps a private secret, and every read or change of its log needs it. The evidence packet shows a log's ID so anyone can recompute its fingerprints, but the ID alone gives no access.
 
 ## Run it locally
 
-No AWS account is needed for local development. The same Lambda handlers run behind a small local server with JSON file storage.
+No AWS account is needed. The same Lambda handlers run behind a small local server that stores data in a JSON file.
 
 ```bash
 # one-time setup
@@ -38,86 +61,56 @@ cd frontend && npm install && cd ..
 
 # terminal 2: app on http://localhost:5173
 cd frontend && npm run dev
-
-# make the sample pay stub images
-.venv/bin/python demo/make_stubs.py
 ```
 
-### The sample account
-
-Tap "Open the sample account" on the home page (or add `?demo=1` to the URL) to browse as Alex Rivera, a made-up warehouse worker. It loads four weeks of hours and three pay stubs that are already checked, so the History page shows hours against pay stubs right away. The newest week (43.5 hours) is left unchecked for the live demo. For the stage demo, open `/log?tamper=1` in the sample account to show a switch that secretly edits one saved entry, so the log's badge turns red. It is hidden otherwise to keep the page simple.
-
-Each browser gets its own copy of the sample data, so visitors cannot change each other's. "Exit" in the yellow bar returns to your own account. The data lives in `backend/src/common/sample.py`.
-
-Without AWS credentials, each cloud feature falls back the same way it does in production: stub fields are typed by hand, letters come from a template, and the agent panel replays the saved run in `demo/fallback/run.json`.
+Without AWS credentials, each cloud feature falls back the same way it does in production: stub fields are typed by hand, letters come from a template, and the agent panel replays the recorded run.
 
 ## Tests
 
 ```bash
-cd backend && ../.venv/bin/python -m pytest      # rules engine, hash chain, letter checks
-cd frontend && npx vitest run                    # hash chain matches the Python side
+cd backend && ../.venv/bin/python -m pytest   # 45 tests: rules engine, hash chain, letters, sharing, seal, waitlist
+cd frontend && npx vitest run                 # 7 tests: hash chain matches Python, Spanish keeps every number
 ```
 
-The demo case is a test: 43.5 hours logged at $17.00, stub pays 38 regular hours, gross $646.00. Expected gross is $769.25, so **$123.25** is possibly owed.
-
-## Live
-
-- Website: https://getstubborn.club (AWS Amplify)
-- API: https://j1m5comkbd.execute-api.us-west-2.amazonaws.com (API Gateway + Lambda, us-west-2)
+The demo case is a test: 43.5 hours logged at $17.00, a stub paying 38 regular hours with gross pay of $646.00. Expected pay is $769.25, so **$123.25** is possibly owed.
 
 ## Deploy
 
 ```bash
-aws login --region us-west-2      # browser sign-in; credentials stay in ~/.aws, never in the repo
-scripts/deploy.sh                 # backend (SAM) then frontend (Amplify zip upload)
-scripts/deploy.sh frontend        # just the website
+aws login --region us-west-2   # browser sign-in; credentials stay in ~/.aws, never in the repo
+scripts/deploy.sh              # backend (SAM), then frontend (Amplify)
+scripts/deploy.sh frontend     # website only
 ```
 
-The TinyFish key lives only in AWS SSM Parameter Store:
+The TinyFish key is stored only in AWS Systems Manager Parameter Store:
 
 ```bash
 aws ssm put-parameter --name /stubborn/tinyfish-api-key --type SecureString --region us-west-2 --value "YOUR_KEY"
 ```
 
-Claude on Bedrock needs model access in the Bedrock console. Until it is granted, letters fall back to a template built from the same engine numbers.
+Claude on Bedrock needs model access and quota on the AWS account. Without them, letters use the template with the same numbers.
 
-### Keeping secrets out of git
+To see the pricing waitlist:
 
-- `.gitignore` covers `.env` files, keys and certificates, `samconfig.toml`, `.aws/`, build output and local data.
-- `.githooks/pre-commit` blocks commits that contain AWS keys, Anthropic keys, private keys or API key values. Turn it on once per clone with `git config core.hooksPath .githooks`.
-- API Gateway rate limits every route, with tighter limits on the paid routes (Textract, Bedrock, TinyFish), so nobody can run up the bill.
+```bash
+aws dynamodb scan --region us-west-2 --table-name $(aws cloudformation describe-stack-resource --stack-name stubborn --logical-resource-id WaitlistTable --query StackResourceDetail.PhysicalResourceId --output text) --query 'Items[].[email.S,plan.S,organization.S,joinedAt.S]' --output table
+```
 
-## How it is built
+**Keeping secrets out of git:** `.gitignore` covers `.env` files, keys, certificates and deploy settings, and `.githooks/pre-commit` blocks commits that contain keys. Turn the hook on once per clone with `git config core.hooksPath .githooks`.
 
-| Piece | What it does |
-|---|---|
-| React + Vite + TypeScript + Tailwind | Mobile-first installable web app. Bottom nav on phones, top nav on wider screens. |
-| API Gateway (HTTP API) + Lambda (Python 3.12) | All endpoints. Defined in `backend/template.yaml` with AWS SAM. |
-| DynamoDB | Shift entries, check results (these drive the History page), agent runs, share links, device secret hashes. |
-| S3 | Pay stub photos, uploaded with a presigned URL and deleted after 7 days. |
-| S3 Object Lock + EventBridge Scheduler | Nightly sealed copy of every log's latest fingerprint that cannot be edited or deleted for 30 days. |
-| Amazon Textract | `AnalyzeDocument` with Queries reads the stub. Fields under 80% confidence are highlighted for the worker to check. |
-| Rules engine (`backend/src/rules/engine.py`) | Pure functions, `Decimal` only. Pairs shifts, splits them by workweek, applies overtime and minimum wage, itemizes findings. |
-| Amazon Bedrock (Claude) | Writes the two letters. Every dollar amount in the output must already exist in the engine result, or it regenerates once and then falls back to a template. |
-| TinyFish Web Agent API | `run-async` starts the run from a worker Lambda, which polls it and writes each step to DynamoDB. The app polls status every 2 seconds. |
+## Pricing
 
-### The hash chain
+A freemium preview at `/pricing`. Payments are not switched on.
 
-Each entry hashes the canonical JSON of its eight fields (keys sorted, no whitespace, coordinates as fixed 6-decimal strings) plus the hash of the previous entry. The same logic lives in `frontend/src/lib/hashchain.ts` and `backend/src/common/hashchain.py`, and both test suites hardcode the same known hash. `GET /shifts/verify` walks the chain and reports the first entry where it breaks.
+- **Free:** clocking in (never limited), the log, the nightly seal, offline use, history, 2 pay stub checks a month and a ready-made note.
+- **Plus, $3 a month:** unlimited checks, AI-written letters, evidence packets and the claim form agent.
+- **Partners:** unions, worker centers and legal aid clinics pay so their members get Plus free.
 
-### The agent never submits
+The Check page shows how many free checks were used this month and links to Plus when they run out; it does not block anyone yet. The app never asks for card details.
 
-Three separate guards: the goal prompt forbids it, the form opens in an agent mode where the Submit button is disabled, and each run has a time and step cap.
+## The wage claim form: what really exists
 
-## Wage claim form: what really exists
-
-Checked on November 14, 2026:
-
-- The Industrial Commission of Arizona (ICA) Labor Department does take unpaid wage claims online. Its Unpaid Wage Claim Form can be completed electronically, or sent by email, fax or mail. Claims may not exceed $12,000; larger claims go to the US Department of Labor Wage and Hour Division or to court.
-- The form must be signed and dated by the claimant (electronic signatures are accepted), and minimum wage complaints use a separate form.
-- The ICA site refuses automated requests (it returned HTTP 403 to non-browser clients during this check).
-
-Because the real form needs the worker's own signature, blocks automated traffic, and should never receive made-up demo data, Stubborn points the agent at its own practice form at `/demo-claim-form`. That page is labeled "Demo wage claim form. Not a government website." and uses no agency name, seal or styling. The agent target is one setting (`CLAIM_FORM_URL`), so a real form could be used later with the worker's consent.
+Checked on November 14, 2026: the Industrial Commission of Arizona (ICA) Labor Department accepts unpaid wage claims online, by email, fax or mail, up to $12,000. The form must be signed by the worker, and the ICA site blocks automated traffic. So the agent fills Stubborn's own practice form at `/demo-claim-form`, labeled "Demo wage claim form. Not a government website." with no agency name or styling.
 
 Sources: [ICA Unpaid Wage Claim Form](https://www.azica.gov/forms/unpaid-wage-claim-form), [ICA Labor Department](https://www.azica.gov/labor-department).
 
@@ -125,12 +118,11 @@ Sources: [ICA Unpaid Wage Claim Form](https://www.azica.gov/forms/unpaid-wage-cl
 
 The Arizona minimum wage is **$15.15 per hour** as of January 1, 2026. It lives in `backend/src/common/config.py` with its source: [ICA, 2026 Minimum Wage Increase](https://www.azica.gov/news/2026-minimum-wage-increase-effective-january-1-2026), cross-checked against the [US DOL state minimum wage table](https://www.dol.gov/agencies/whd/minimum-wage/state).
 
-## Scope and honest limits
+## Limits
 
-- Covers hourly, non-tipped workers with one hourly rate and one employer, in Arizona. Checks federal overtime (over 40 hours in a workweek at 1.5x) and the Arizona minimum wage. Weekly and biweekly pay periods.
+- Covers hourly, non-tipped workers in Arizona with one pay rate and one employer, weekly or biweekly pay. Checks federal overtime (over 40 hours in a workweek at 1.5 times the rate) and the Arizona minimum wage.
 - Does not cover tipped or salaried workers, multiple rates, break and meal rules, or other states.
-- The hash chain shows the log was not edited after the fact. It does not prove the worker was really working. Server receipt times and location stamps make the log harder to fake.
-- A web app cannot run background geofencing, so clock in and out is one tap with a location stamp.
-- If the stub rate is below the minimum wage, expected pay is figured at the minimum wage.
-- `demo/fallback/run.json` holds the steps of a real TinyFish run recorded on the deployed site (69 seconds, 11 fields filled, no submit). If a live run fails or passes 90 seconds, the app replays it and says "Showing a recorded run." The replay spaces the steps evenly.
-- Live agent steps come from TinyFish in English, so they stay in English when the app is in Spanish.
+- The log shows it was not changed after the fact. It cannot prove the worker was at work, though the time and place on each tap make it hard to fake.
+- A web app cannot clock in automatically by location, so clocking in is one tap.
+- Live agent steps come from TinyFish in English, so they stay in English in Spanish mode.
+- At the time of submission the AWS account's Bedrock quota for Claude was zero, so live letters used the template.
