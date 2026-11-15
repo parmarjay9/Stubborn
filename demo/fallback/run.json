@@ -1,13 +1,99 @@
 {
-  "source": "sample",
-  "note": "Scripted sample steps, NOT a recording. Replace with the steps from one real TinyFish run (GET /agent/status/{runId}) and set source to \"recorded\" before the demo.",
+  "source": "recorded",
+  "note": "Steps from a real TinyFish run against the deployed demo claim form on 2026-11-15 (UTC). The run took 69 seconds; the replay spaces the steps evenly so it plays in about 25 seconds.",
+  "recordedAt": "2026-11-15T01:44:43+00:00",
+  "durationSeconds": 69,
   "steps": [
-    { "step": 1, "message": "Opening the wage claim form...", "delayMs": 900 },
-    { "step": 2, "message": "Filling in your name and contact details...", "delayMs": 1800 },
-    { "step": 3, "message": "Filling employer details...", "delayMs": 1700 },
-    { "step": 4, "message": "Entering the pay period and hourly rate...", "delayMs": 1600 },
-    { "step": 5, "message": "Adding hours evidence from your log...", "delayMs": 1900 },
-    { "step": 6, "message": "Writing the claim description...", "delayMs": 2000 },
-    { "step": 7, "message": "Stopped before submit for your review", "delayMs": 1200 }
-  ]
+    {
+      "step": 1,
+      "message": "Opening the wage claim form...",
+      "delayMs": 900
+    },
+    {
+      "step": 2,
+      "message": "Navigate to the claim form page",
+      "delayMs": 1400
+    },
+    {
+      "step": 3,
+      "message": "Fill in full name",
+      "delayMs": 1400
+    },
+    {
+      "step": 4,
+      "message": "Fill in phone number",
+      "delayMs": 1400
+    },
+    {
+      "step": 5,
+      "message": "Fill in email address",
+      "delayMs": 1400
+    },
+    {
+      "step": 6,
+      "message": "Fill in employer name",
+      "delayMs": 1400
+    },
+    {
+      "step": 7,
+      "message": "Fill in pay period start date",
+      "delayMs": 1400
+    },
+    {
+      "step": 8,
+      "message": "Fill in pay period end date",
+      "delayMs": 1400
+    },
+    {
+      "step": 9,
+      "message": "Fill in hourly rate",
+      "delayMs": 1400
+    },
+    {
+      "step": 10,
+      "message": "Fill in hours worked from own log",
+      "delayMs": 1400
+    },
+    {
+      "step": 11,
+      "message": "Fill in hours paid on the pay stub",
+      "delayMs": 1400
+    },
+    {
+      "step": 12,
+      "message": "Fill in amount possibly owed",
+      "delayMs": 1400
+    },
+    {
+      "step": 13,
+      "message": "Fill in description of the claim",
+      "delayMs": 1400
+    },
+    {
+      "step": 14,
+      "message": "Verify all form fields are filled correctly",
+      "delayMs": 1400
+    },
+    {
+      "step": 15,
+      "message": "Verify all form field values",
+      "delayMs": 1400
+    },
+    {
+      "step": 16,
+      "message": "Report all fields filled successfully",
+      "delayMs": 1400
+    },
+    {
+      "step": 17,
+      "message": "Task completed",
+      "delayMs": 1400
+    },
+    {
+      "step": 18,
+      "message": "Stopped before submit for your review",
+      "delayMs": 1400
+    }
+  ],
+  "result": "All form fields have been filled successfully with the provided details. Below is the summary of the fields and their values:\n\n| Field | Value |\n|---|---|\n| Full name | Alex Rivera |\n| Phone | 480-555-0142 |\n| Email | alex.rivera@example.com |\n| Employer name | Desert Sun Logistics LLC |\n| Pay period start | 2026-11-08 |\n| Pay period end | 2026-11-14 |\n| Hourly rate | $17.00 (entered as 17.00) |\n| Hours worked (from your own log) | 43.5 |\n| Hours paid on the pay stub | 38 |\n| Amount possibly owed | $123.25 (entered as 123.25) |\n| Description of the claim | Alex Rivera worked for Desert Sun Logistics LLC at $17.00 per hour. For the pay period November 8 to 14, 2026, the worker's own time log shows 43.5 hours. The pay stub shows 38 hours paid and gross pay of $646.00. The amount possibly owed is $123.25. |\n\nNo Submit button was clicked. The worker can now review the form before submitting it."
 }

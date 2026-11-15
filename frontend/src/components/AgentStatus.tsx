@@ -99,7 +99,7 @@ export default function AgentStatus({ claim, ready }: { claim: Claim; ready: boo
                     <path d="M5 12.5l4.5 4.5L19 7.5" />
                   </svg>
                 )}
-                <span>{t(step.message)}</span>
+                <span>{replayed || step.step === 1 || index === steps.length - 1 ? t(step.message) : step.message}</span>
               </li>
             )
           })}

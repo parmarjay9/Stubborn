@@ -7,7 +7,8 @@ TinyFish Web Agent API (docs.tinyfish.ai):
 HARD RULE: the agent never submits a form. That is enforced three ways:
   1. the goal prompt forbids it,
   2. the demo form opens with ?agent=1, which renders the Submit button disabled,
-  3. the run is capped at AGENT_MAX_SECONDS and a small step budget.
+  3. this worker stops waiting after AGENT_MAX_SECONDS and cancels the run.
+     (TinyFish's own max_steps setting needs their beta program, so it is not sent.)
 """
 import json
 import os
@@ -63,8 +64,13 @@ def _call(method, path, key, payload=None):
         method=method,
         headers={"X-API-Key": key, "Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(request, timeout=15) as response:
-        return json.loads(response.read().decode())
+    try:
+        with urllib.request.urlopen(request, timeout=15) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as err:
+        # Log TinyFish's own explanation; the status code alone hides the cause.
+        print(f"TinyFish {method} {path} -> {err.code}: {err.read()[:300]!r}")
+        raise
 
 
 def claim_form_url():
@@ -86,7 +92,6 @@ def run_agent(run_id):
         started = _call("POST", "/v1/automation/run-async", key, {
             "url": url,
             "goal": GOAL.format(**run["claim"]),
-            "agent_config": {"max_steps": 40, "max_duration_seconds": config.AGENT_MAX_SECONDS},
         })
         tinyfish_id = started.get("run_id")
         if not tinyfish_id:

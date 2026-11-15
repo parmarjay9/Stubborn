@@ -127,4 +127,5 @@ The Arizona minimum wage is **$15.15 per hour** as of January 1, 2026. It lives 
 - The hash chain shows the log was not edited after the fact. It does not prove the worker was really working. Server receipt times and location stamps make the log harder to fake.
 - A web app cannot run background geofencing, so clock in and out is one tap with a location stamp.
 - If the stub rate is below the minimum wage, expected pay is figured at the minimum wage.
-- `demo/fallback/run.json` currently holds scripted sample steps, and the app labels it "sample run". Replace it with the steps from one real TinyFish run before relying on it as a recording.
+- `demo/fallback/run.json` holds the steps of a real TinyFish run recorded on the deployed site (69 seconds, 11 fields filled, no submit). If a live run fails or passes 90 seconds, the app replays it and says "Showing a recorded run." The replay spaces the steps evenly.
+- Live agent steps come from TinyFish in English, so they stay in English when the app is in Spanish.

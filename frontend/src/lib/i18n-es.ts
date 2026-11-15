@@ -449,3 +449,23 @@ Object.assign(ES, {
   'Demo page built by': 'Página de demostración hecha por',
   'Not affiliated with any government agency.': 'No está afiliada a ninguna agencia del gobierno.',
 })
+
+// Steps of the recorded TinyFish run (demo/fallback/run.json)
+Object.assign(ES, {
+  'Navigate to the claim form page': 'Ir a la página del formulario de reclamo',
+  'Fill in full name': 'Llenar el nombre completo',
+  'Fill in phone number': 'Llenar el número de teléfono',
+  'Fill in email address': 'Llenar el correo electrónico',
+  'Fill in employer name': 'Llenar el nombre del empleador',
+  'Fill in pay period start date': 'Llenar la fecha de inicio del periodo de pago',
+  'Fill in pay period end date': 'Llenar la fecha de fin del periodo de pago',
+  'Fill in hourly rate': 'Llenar la tarifa por hora',
+  'Fill in hours worked from own log': 'Llenar las horas trabajadas según su registro',
+  'Fill in hours paid on the pay stub': 'Llenar las horas pagadas en el talón',
+  'Fill in amount possibly owed': 'Llenar la cantidad que posiblemente se debe',
+  'Fill in description of the claim': 'Llenar la descripción del reclamo',
+  'Verify all form fields are filled correctly': 'Verificar que todas las casillas estén bien llenas',
+  'Verify all form field values': 'Verificar los valores de todas las casillas',
+  'Report all fields filled successfully': 'Informar que todas las casillas se llenaron',
+  'Task completed': 'Tarea terminada',
+})
