@@ -1,6 +1,7 @@
 import { clockTime, dayLabel, decimalHours, duration, shortDate } from '../lib/format'
 import type { Entry } from '../lib/hashchain'
 import { groupByWeek, pairShifts } from '../lib/shifts'
+import { t } from '../lib/i18n'
 
 /** The log, drawn as a punched timecard: one card per workweek. */
 export default function ShiftList({ entries }: { entries: Entry[] }) {
@@ -9,8 +10,8 @@ export default function ShiftList({ entries }: { entries: Entry[] }) {
   if (weeks.length === 0) {
     return (
       <div className="card text-center">
-        <p className="font-display text-xl font-extrabold">A blank timecard</p>
-        <p className="mt-1 text-sm text-muted">Tap Clock in when your shift starts. Your hours will stack up here.</p>
+        <p className="font-display text-xl font-extrabold">{t('A blank timecard')}</p>
+        <p className="mt-1 text-sm text-muted">{t('Tap Clock in when your shift starts. Your hours will stack up here.')}</p>
       </div>
     )
   }
@@ -21,14 +22,14 @@ export default function ShiftList({ entries }: { entries: Entry[] }) {
         <section key={week.weekStart} className="card p-0">
           <header className="flex items-end justify-between gap-3 border-b-2 border-ink px-4 py-3">
             <div>
-              <p className="tag text-muted">Timecard, week of</p>
+              <p className="tag text-muted">{t('Timecard, week of')}</p>
               <h3 className="text-lg font-extrabold">
-                {shortDate(week.weekStart)} to {shortDate(week.weekEnd)}
+                {t('{start} to {end}', { start: shortDate(week.weekStart), end: shortDate(week.weekEnd) })}
               </h3>
             </div>
             <p className="text-right leading-none">
               <span className="hl font-mono text-3xl font-bold">{decimalHours(week.minutes)}</span>
-              <span className="tag ml-1.5 text-muted">hours</span>
+              <span className="tag ml-1.5 text-muted">{t('hours')}</span>
             </p>
           </header>
           <ul className="divide-y-2 divide-dashed divide-ink/15">
@@ -38,14 +39,14 @@ export default function ShiftList({ entries }: { entries: Entry[] }) {
                   <p className="font-bold">{dayLabel(day.date)}</p>
                   {day.shifts.map((shift) => (
                     <p key={shift.inEntry.seq} className="font-mono text-sm text-muted">
-                      {clockTime(shift.inEntry.clientTs)} to {shift.outEntry ? clockTime(shift.outEntry.clientTs) : 'now (on the clock)'}
+                      {t('{start} to {end}', { start: clockTime(shift.inEntry.clientTs), end: shift.outEntry ? clockTime(shift.outEntry.clientTs) : t('now (on the clock)') })}
                       {(shift.inEntry.pending || shift.outEntry?.pending) && (
                         <span className="ml-1.5 rounded border border-ink/40 px-1 font-sans text-[0.7rem] font-bold uppercase text-ink">
-                          Not sent yet
+                          {t('Not sent yet')}
                         </span>
                       )}
                       {shift.inEntry.lat !== null && (
-                        <span title="Location stamped" aria-label="Location stamped" className="ml-1.5 text-accent">
+                        <span title={t('Location stamped')} aria-label={t('Location stamped')} className="ml-1.5 text-accent">
                           ●
                         </span>
                       )}
@@ -59,7 +60,7 @@ export default function ShiftList({ entries }: { entries: Entry[] }) {
         </section>
       ))}
       <p className="text-center text-xs text-muted">
-        <span className="text-accent">●</span> means the entry carries a location stamp.
+        <span className="text-accent">●</span> {t('means the entry carries a location stamp.')}
       </p>
     </div>
   )

@@ -6,6 +6,7 @@ import StubUpload, { prepareImage } from '../components/StubUpload'
 import { api, uploadStub, type StubFieldName, type StubFields } from '../lib/api'
 import { getDeviceId } from '../lib/device'
 import { store } from '../lib/store'
+import { t } from '../lib/i18n'
 
 const EMPTY: StubFields = {
   payPeriodStart: '',
@@ -48,10 +49,10 @@ export default function Check() {
       if (result.ok && next.overtimeHoursPaid === '') next.overtimeHoursPaid = '0.00'
       setFields(next)
       setConfidence(result.ok ? scores : {})
-      setNotice(result.ok ? 'We read these from your stub. Fix anything that looks off.' : result.message ?? null)
+      setNotice(result.ok ? t('We read these from your stub. Fix anything that looks off.') : t('We could not read the stub automatically. Please type the numbers in.'))
       setStage('confirm')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'We could not read that photo.')
+      setError(err instanceof Error ? err.message : t('We could not read that photo.'))
       setStage('upload')
     }
   }
@@ -63,7 +64,7 @@ export default function Check() {
       store.setCheck(await api.check(getDeviceId(), values))
       navigate('/result')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'The check did not run. Please try again.')
+      setError(err instanceof Error ? err.message : t('The check did not run. Please try again.'))
       setChecking(false)
     }
   }
@@ -72,9 +73,9 @@ export default function Check() {
     <div className="grid gap-5">
       <div>
         <StepTrail current={2} />
-        <h1 className="mt-3 text-4xl font-extrabold">Check my pay stub</h1>
+        <h1 className="mt-3 text-4xl font-extrabold">{t('Check my pay stub')}</h1>
         <p className="mt-1 text-muted">
-          {stage === 'confirm' ? 'Almost there. Confirm the numbers we read.' : 'Snap a photo. We will line it up against your log.'}
+          {stage === 'confirm' ? t('Almost there. Confirm the numbers we read.') : t('Snap a photo. We will line it up against your log.')}
         </p>
       </div>
 
@@ -86,7 +87,7 @@ export default function Check() {
             onManual={() => {
               setFields(EMPTY)
               setConfidence({})
-              setNotice('Type the numbers from your pay stub.')
+              setNotice(t('Type the numbers from your pay stub.'))
               setStage('confirm')
             }}
           />
@@ -94,8 +95,8 @@ export default function Check() {
       )}
 
       {stage === 'reading' && (
-        <div className="grid gap-3" role="status" aria-label="Reading your pay stub">
-          <p className="font-semibold">Reading your pay stub...</p>
+        <div className="grid gap-3" role="status" aria-label={t('Reading your pay stub')}>
+          <p className="font-semibold">{t('Reading your pay stub...')}</p>
           <div className="card grid grid-cols-2 gap-4">
             {Array.from({ length: 6 }, (_, i) => (
               <div key={i} className="skeleton h-14" />
@@ -109,7 +110,7 @@ export default function Check() {
           {notice && <p className="rounded-xl bg-accent-soft px-3 py-2 text-sm text-accent-dark">{notice}</p>}
           <ConfirmFields initial={fields} confidence={confidence} busy={checking} error={error} onConfirm={confirm} />
           <button type="button" className="min-h-12 text-sm font-semibold text-muted underline" onClick={() => setStage('upload')}>
-            Use a different photo
+            {t('Use a different photo')}
           </button>
         </>
       )}

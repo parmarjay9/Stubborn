@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import ChainDemo from '../components/ChainDemo'
 import { api } from '../lib/api'
 import { SAMPLE_WORKER, getDeviceId, isDemo, setDemo } from '../lib/device'
-import { money } from '../lib/format'
+import { dayLabel, money } from '../lib/format'
+import { t } from '../lib/i18n'
 import { store } from '../lib/store'
 
 /* ---------- little pictures for the walkthrough (examples, not live data) ---------- */
@@ -11,12 +12,12 @@ import { store } from '../lib/store'
 const PunchVignette = ({ out }: { out?: boolean }) => (
   <div className="flex items-center gap-3">
     <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-full border-2 border-ink text-[0.72rem] font-black uppercase leading-tight shadow-hard-sm ${out ? 'bg-ink text-hi' : 'bg-hi'}`}>
-      {out ? 'Out' : 'In'}
+      {out ? t('Out') : t('In')}
     </span>
     <span className="font-mono text-xs leading-relaxed">
-      <b>{out ? '5:02 PM' : '8:02 AM'}</b> Mon Nov 9
+      <b>{out ? '5:02 PM' : '8:02 AM'}</b> {dayLabel('2026-11-09')}
       <br />
-      <span className="text-muted">{out ? 'locked to the entry before it' : 'time + location stamped'}</span>
+      <span className="text-muted">{out ? t('locked to the entry before it') : t('time + location stamped')}</span>
     </span>
   </div>
 )
@@ -34,20 +35,20 @@ const SnapVignette = () => (
 const ConfirmVignette = () => (
   <div className="grid grid-cols-2 gap-2 font-mono text-xs">
     <span className="rounded border-2 border-ink/70 bg-white px-2 py-1">
-      <span className="block text-[0.72rem] text-muted">Rate</span>17.00
+      <span className="block text-[0.72rem] text-muted">{t('Rate')}</span>17.00
     </span>
     <span className="rounded border-2 border-warn bg-warn-soft px-2 py-1">
-      <span className="block text-[0.72rem] font-bold text-warn">Please check</span>38.00
+      <span className="block text-[0.72rem] font-bold text-warn">{t('Please check')}</span>38.00
     </span>
   </div>
 )
 
 const OwedVignette = () => (
   <div className="font-mono text-xs">
-    <p className="leader"><span>Your log</span><b>43.5 h</b></p>
-    <p className="leader"><span>Stub paid</span><b>38 h</b></p>
+    <p className="leader"><span>{t('Your log')}</span><b>43.5 h</b></p>
+    <p className="leader"><span>{t('Stub paid')}</span><b>38 h</b></p>
     <p className="mt-1 font-display text-2xl font-extrabold">
-      <span className="hl">$123.25</span> <span className="font-sans text-xs font-semibold text-muted">possibly owed</span>
+      <span className="hl">$123.25</span> <span className="font-sans text-xs font-semibold text-muted">{t('possibly owed')}</span>
     </p>
   </div>
 )
@@ -59,13 +60,13 @@ const ActVignette = () => (
         <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-accent" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M5 12.5l4.5 4.5L19 7.5" />
         </svg>
-        {line}
+        {t(line)}
       </li>
     ))}
   </ul>
 )
 
-/* ---------- the process ---------- */
+/* ---------- the process (English keys, translated where shown) ---------- */
 
 interface Step {
   title: string
@@ -135,8 +136,8 @@ const PHASES: { name: string; when: string; to: string; cta: string; steps: Step
     steps: [
       {
         title: 'Ask about it, your way',
-        you: 'Send the friendly note, or review the claim form. Or do nothing. Your call.',
-        we: 'We draft a polite note to your manager and fill in a wage claim form. We never press submit.',
+        you: 'Send the friendly note, share an evidence packet, or review the claim form. Or do nothing. Your call.',
+        we: 'We draft a polite note to your manager, build a packet anyone can verify, and fill in a wage claim form. We never press submit.',
         time: '1 minute',
         picture: <ActVignette />,
       },
@@ -168,23 +169,23 @@ function NextStep() {
 
   const owed = check && check.totals.owed !== '0.00' ? money(check.totals.owed) : null
   const next = !hasHours
-    ? { line: 'Start your own timesheet. It takes one tap.', to: '/log', cta: 'Clock in' }
+    ? { line: t('Start your own timesheet. It takes one tap.'), to: '/log', cta: t('Clock in') }
     : !check
-      ? { line: 'Your hours are on the record. Got a pay stub? Check it against your log.', to: '/check', cta: 'Check my pay stub' }
+      ? { line: t('Your hours are on the record. Got a pay stub? Check it against your log.'), to: '/check', cta: t('Check my pay stub') }
       : owed && !acted
-        ? { line: `Your last check found ${owed} possibly owed. Worth asking about.`, to: '/act', cta: 'Take action' }
-        : { line: 'You are all caught up. Keep clocking in.', to: '/log', cta: 'Open my hours' }
+        ? { line: t('Your last check found {owed} possibly owed. Worth asking about.', { owed }), to: '/act', cta: t('Take action') }
+        : { line: t('You are all caught up. Keep clocking in.'), to: '/log', cta: t('Open my hours') }
 
   const done = [Boolean(hasHours), Boolean(check), acted]
   return (
-    <section className="card grid gap-3" aria-label="Your next step">
+    <section className="card grid gap-3" aria-label={t('Your next step')}>
       <div className="flex items-center justify-between">
-        <p className="tag text-muted">You are here</p>
+        <p className="tag text-muted">{t('You are here')}</p>
         <ol className="flex gap-1.5">
           {['Record', 'Catch', 'Act'].map((name, index) => (
             <li key={name} className={`tag rounded border-2 px-1.5 py-0.5 ${done[index] ? 'border-accent bg-accent-soft text-accent-dark' : 'border-ink/25 text-muted'}`}>
               {done[index] ? '✓ ' : ''}
-              {name}
+              {t(name)}
             </li>
           ))}
         </ol>
@@ -204,36 +205,37 @@ const UNDER_THE_HOOD = [
   ['A tested rules engine', 'does all the math with exact decimals. No AI touches the money.'],
   ['Claude on Amazon Bedrock', 'only writes the words, and every dollar amount is checked against the engine.'],
   ['A TinyFish web agent', 'fills in the claim form and stops before submit.'],
+  ['Amazon S3 Object Lock', 'keeps a nightly sealed copy of every log fingerprint that nobody can edit.'],
 ]
 
 export default function Home() {
   return (
     <div className="pop grid gap-10">
       <section>
-        <p className="tag text-muted">A sunhacks 2026 project</p>
+        <p className="tag text-muted">{t('A sunhacks 2026 project')}</p>
         <h1 className="mt-3 text-[3.1rem] font-extrabold leading-[0.98]">
-          Your hours.
+          {t('Your hours.')}
           <br />
-          Your proof.
+          {t('Your proof.')}
           <br />
-          <span className="hl">Your pay.</span>
+          <span className="hl">{t('Your pay.')}</span>
         </h1>
         <p className="mt-5 text-lg leading-snug text-muted">
-          Your employer keeps the timeclock. <b className="text-ink">Now you keep one too.</b> Stubborn checks your pay stub against
-          your own record and helps you ask about anything missing. Politely. Persistently.
+          {t('Your employer keeps the timeclock.')} <b className="text-ink">{t('Now you keep one too.')}</b>{' '}
+          {t('Stubborn checks your pay stub against your own record and helps you ask about anything missing. Politely. Persistently.')}
         </p>
 
         {/* an example of the payoff, tilted like a stub tossed on a desk */}
         <div className="receipt-wrap mx-auto mt-7 w-64 rotate-2">
           <div className="receipt px-4 pt-3 text-sm">
-            <p className="tag text-muted">Example pay check</p>
-            <p className="leader mt-2"><span>Your log</span><b>43.5 h</b></p>
-            <p className="leader"><span>Stub paid</span><b>38 h</b></p>
-            <p className="leader"><span>Missing</span><b>5.5 h</b></p>
+            <p className="tag text-muted">{t('Example pay check')}</p>
+            <p className="leader mt-2"><span>{t('Your log')}</span><b>43.5 h</b></p>
+            <p className="leader"><span>{t('Stub paid')}</span><b>38 h</b></p>
+            <p className="leader"><span>{t('Missing')}</span><b>5.5 h</b></p>
             <p className="mt-2 border-t-2 border-dashed border-ink/40 pt-2 text-center font-display text-3xl font-extrabold">
               <span className="hl">$123.25</span>
             </p>
-            <p className="pb-3 text-center text-xs">possibly owed</p>
+            <p className="pb-3 text-center text-xs">{t('possibly owed')}</p>
           </div>
         </div>
       </section>
@@ -242,11 +244,13 @@ export default function Home() {
 
       {!isDemo() && (
         <section className="rounded-2xl border-2 border-dashed border-ink bg-hi-soft p-5">
-          <p className="tag text-muted">Just looking?</p>
-          <h2 className="mt-1 text-2xl font-extrabold">Try the sample account</h2>
+          <p className="tag text-muted">{t('Just looking?')}</p>
+          <h2 className="mt-1 text-2xl font-extrabold">{t('Try the sample account')}</h2>
           <p className="mt-1.5 text-[0.95rem] leading-snug text-muted">
-            Step into the shoes of {SAMPLE_WORKER.name}, a made-up warehouse worker. Four weeks of hours are already
-            logged and three pay stubs are already checked, so you can see hours against pay stubs right away.
+            {t(
+              'Step into the shoes of {name}, a made-up warehouse worker. Four weeks of hours are already logged and three pay stubs are already checked, so you can see hours against pay stubs right away.',
+              { name: SAMPLE_WORKER.name },
+            )}
           </p>
           <button
             type="button"
@@ -256,14 +260,14 @@ export default function Home() {
               location.assign('/history')
             }}
           >
-            Open the sample account
+            {t('Open the sample account')}
           </button>
         </section>
       )}
 
       <section id="how" className="scroll-mt-20">
-        <p className="tag text-muted">How it works</p>
-        <h2 className="mt-1 text-3xl font-extrabold">Six small steps. Three of them are one tap.</h2>
+        <p className="tag text-muted">{t('How it works')}</p>
+        <h2 className="mt-1 text-3xl font-extrabold">{t('Six small steps. Three of them are one tap.')}</h2>
 
         <div className="mt-6 grid gap-8">
           {PHASES.map((phase, phaseIndex) => {
@@ -271,8 +275,8 @@ export default function Home() {
             return (
               <div key={phase.name}>
                 <div className="flex items-center gap-3">
-                  <span className="rounded-md border-2 border-ink bg-ink px-2.5 py-1 font-display text-lg font-extrabold text-hi">{phase.name}</span>
-                  <span className="tag text-muted">{phase.when}</span>
+                  <span className="rounded-md border-2 border-ink bg-ink px-2.5 py-1 font-display text-lg font-extrabold text-hi">{t(phase.name)}</span>
+                  <span className="tag text-muted">{t(phase.when)}</span>
                   <span className="h-0.5 flex-1 bg-ink/20" aria-hidden="true" />
                 </div>
 
@@ -286,16 +290,16 @@ export default function Home() {
                       </span>
                       <div>
                         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                          <h3 className="text-xl font-extrabold leading-tight">{step.title}</h3>
-                          <span className="tag text-muted">{step.time}</span>
+                          <h3 className="text-xl font-extrabold leading-tight">{t(step.title)}</h3>
+                          <span className="tag text-muted">{t(step.time)}</span>
                         </div>
                         <p className="mt-1.5 text-[0.95rem] leading-snug">
-                          <span className="tag mr-1.5 text-ink">You</span>
-                          {step.you}
+                          <span className="tag mr-1.5 text-ink">{t('You')}</span>
+                          {t(step.you)}
                         </p>
                         <p className="mt-1 text-[0.95rem] leading-snug text-muted">
                           <span className="tag mr-1.5 text-accent">Stubborn</span>
-                          {step.we}
+                          {t(step.we)}
                         </p>
                         <div className="mt-3 rounded-xl border-2 border-dashed border-ink/30 bg-card/70 p-3">{step.picture}</div>
                       </div>
@@ -304,7 +308,7 @@ export default function Home() {
                 </ol>
 
                 <Link to={phase.to} className="ml-[3.25rem] inline-flex min-h-11 items-center gap-1 font-bold underline decoration-hi decoration-4 underline-offset-4">
-                  {phase.cta} <span aria-hidden="true">→</span>
+                  {t(phase.cta)} <span aria-hidden="true">→</span>
                 </Link>
               </div>
             )
@@ -313,33 +317,32 @@ export default function Home() {
       </section>
 
       <section>
-        <p className="tag text-muted">Why anyone should believe your log</p>
-        <h2 className="mt-1 text-3xl font-extrabold">A timesheet that tattles on edits</h2>
+        <p className="tag text-muted">{t('Why anyone should believe your log')}</p>
+        <h2 className="mt-1 text-3xl font-extrabold">{t('A timesheet that tattles on edits')}</h2>
         <p className="mb-5 mt-2 text-muted">
-          A note in your phone can be changed any time, so it is easy to wave away. Stubborn's log is different, and you can
-          see why right here.
+          {t("A note in your phone can be changed any time, so it is easy to wave away. Stubborn's log is different, and you can see why right here.")}
         </p>
         <ChainDemo />
       </section>
 
       <section>
-        <p className="tag text-muted">Under the hood</p>
-        <h2 className="mt-1 text-3xl font-extrabold">Who does what</h2>
+        <p className="tag text-muted">{t('Under the hood')}</p>
+        <h2 className="mt-1 text-3xl font-extrabold">{t('Who does what')}</h2>
         <ul className="mt-4 grid gap-2">
           {UNDER_THE_HOOD.map(([who, what]) => (
             <li key={who} className="rounded-xl border-2 border-ink/20 bg-card/70 px-4 py-3 text-[0.95rem] leading-snug">
-              <b>{who}</b> {what}
+              <b>{t(who)}</b> {t(what)}
             </li>
           ))}
         </ul>
       </section>
 
       <section className="rounded-2xl border-2 border-dashed border-ink/40 p-4 text-sm leading-relaxed text-muted">
-        <p className="tag text-ink">The fine print, in plain words</p>
+        <p className="tag text-ink">{t('The fine print, in plain words')}</p>
         <p className="mt-2">
-          Built for hourly, non-tipped workers in Arizona with one hourly rate and one employer. It checks federal overtime
-          (over 40 hours in a workweek) and the Arizona minimum wage. Tips, salaries, break rules and other states are not
-          covered yet. The log shows it was not edited after the fact. It cannot prove you were working.
+          {t(
+            'Built for hourly, non-tipped workers in Arizona with one hourly rate and one employer. It checks federal overtime (over 40 hours in a workweek) and the Arizona minimum wage. Tips, salaries, break rules and other states are not covered yet. The log shows it was not edited after the fact. It cannot prove you were working.',
+          )}
         </p>
       </section>
     </div>

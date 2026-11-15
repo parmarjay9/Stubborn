@@ -59,6 +59,8 @@ export interface Finding {
   label: string
   math: string
   amount: string | null
+  /** The numbers in label and math, so the app can word them in another language. */
+  params?: Record<string, string>
 }
 
 export interface CheckResult {
@@ -168,7 +170,7 @@ export const api = {
     call<{ shareId: string }>('POST', '/share', { deviceId, checkId, worker }),
   readShare: (shareId: string) => call<SharedPacket>('GET', `/share/${encodeURIComponent(shareId)}`),
   history: (deviceId: string) => call<HistoryResult>('GET', `/history?deviceId=${deviceId}`),
-  letters: (check: CheckResult, worker: Worker) => call<Letters>('POST', '/letters', { check, worker }),
+  letters: (check: CheckResult, worker: Worker, lang: 'en' | 'es' = 'en') => call<Letters>('POST', '/letters', { check, worker, lang }),
   agentStart: (deviceId: string, claim: Claim) => call<{ runId: string }>('POST', '/agent/start', { deviceId, claim }),
   agentStatus: (runId: string) => call<AgentRun>('GET', `/agent/status/${runId}`),
 }

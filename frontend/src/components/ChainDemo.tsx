@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { clockTime } from '../lib/format'
 import { ZERO_HASH, hashEntry, type EntryCore } from '../lib/hashchain'
+import { t } from '../lib/i18n'
 
 // A hands-on explainer. These four sample entries are hashed in the browser
 // with the same code the real log uses, so the break you see is a real one.
@@ -52,12 +53,12 @@ export default function ChainDemo() {
     <div className="card grid gap-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="tag text-muted">Try it</p>
-          <h3 className="text-xl font-extrabold">Go on, try to fudge an entry</h3>
+          <p className="tag text-muted">{t('Try it')}</p>
+          <h3 className="text-xl font-extrabold">{t('Go on, try to fudge an entry')}</h3>
         </div>
         {blocks.length > 0 && (
           <span key={String(tampered)} className={`stamp thunk shrink-0 ${brokenAt === -1 ? 'border-accent text-accent' : 'border-bad text-bad'}`}>
-            {brokenAt === -1 ? 'Verified' : 'Changed'}
+            {brokenAt === -1 ? t('Verified') : t('Changed')}
           </span>
         )}
       </div>
@@ -73,7 +74,7 @@ export default function ChainDemo() {
               )}
               <div className={`flex items-center justify-between gap-3 rounded-lg border-2 px-3 py-2 font-mono text-sm ${broken ? 'border-bad bg-bad-soft text-bad' : 'border-ink bg-white'}`}>
                 <span>
-                  <span className="font-bold">{block.entry.type === 'IN' ? 'IN ' : 'OUT'}</span>{' '}
+                  <span className="font-bold">{block.entry.type === 'IN' ? t('IN') : t('OUT')}</span>{' '}
                   <span className={edited ? 'font-bold underline decoration-wavy' : ''}>{clockTime(block.entry.clientTs)}</span>
                 </span>
                 <span className="text-xs">
@@ -93,12 +94,12 @@ export default function ChainDemo() {
 
       <p className="min-h-10 text-sm text-muted" aria-live="polite">
         {brokenAt === -1
-          ? 'Each entry gets a fingerprint (the # code) made from its own details plus the fingerprint before it.'
-          : `Entry ${brokenAt} now says 7:02 PM, so its fingerprint no longer matches the one the server saved. Everything after it is in doubt too.`}
+          ? t('Each entry gets a fingerprint (the # code) made from its own details plus the fingerprint before it.')
+          : t('Entry {n} now says 7:02 PM, so its fingerprint no longer matches the one the server saved. Everything after it is in doubt too.', { n: brokenAt })}
       </p>
 
       <button type="button" className="btn btn-secondary !min-h-12 !text-base" onClick={() => setTampered(!tampered)}>
-        {tampered ? 'Put it back' : 'Add 2 hours to Monday'}
+        {tampered ? t('Put it back') : t('Add 2 hours to Monday')}
       </button>
     </div>
   )

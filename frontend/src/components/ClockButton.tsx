@@ -4,6 +4,7 @@ import { getDeviceId } from '../lib/device'
 import { clockTime, localIso } from '../lib/format'
 import { recordTap } from '../lib/offline'
 import { ZERO_HASH, hashEntry, roundCoord, type Entry, type EntryCore } from '../lib/hashchain'
+import { t } from '../lib/i18n'
 
 interface Spot {
   lat: number | null
@@ -60,15 +61,15 @@ export default function ClockButton({ entries, onChange }: { entries: Entry[]; o
       }
       const outcome = await recordTap({ ...core, hash: await hashEntry(core) })
       setNote(
-        `${core.type === 'IN' ? 'Clocked in' : 'Clocked out'} at ${clockTime(core.clientTs)}. ` +
+        (core.type === 'IN' ? t('Clocked in at {time}.', { time: clockTime(core.clientTs) }) : t('Clocked out at {time}.', { time: clockTime(core.clientTs) })) + ' ' +
           (outcome === 'queued'
-            ? 'No signal right now, so it is saved on this phone and will send by itself when you are back online.'
+            ? t('No signal right now, so it is saved on this phone and will send by itself when you are back online.')
             : spot.lat === null
-              ? 'Location was not available, so this entry has the time only.'
-              : 'Time and location saved.'),
+              ? t('Location was not available, so this entry has the time only.')
+              : t('Time and location saved.')),
       )
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'That did not save. Please try again.')
+      setError(err instanceof ApiError ? err.message : t('That did not save. Please try again.'))
     } finally {
       await onChange()
       setBusy(false)
@@ -89,10 +90,10 @@ export default function ClockButton({ entries, onChange }: { entries: Entry[]; o
           clockedIn ? 'bg-ink text-hi shadow-[6px_6px_0_var(--color-hi)]' : 'bg-hi text-ink'
         }`}
       >
-        {busy ? 'Punching...' : clockedIn ? 'Clock out' : 'Clock in'}
+        {busy ? t('Punching...') : clockedIn ? t('Clock out') : t('Clock in')}
       </button>
       <p className="mt-5 text-sm font-semibold text-muted" aria-live="polite">
-        {clockedIn && head ? `On the clock since ${clockTime(head.clientTs)}` : 'You are off the clock. Tap when your shift starts.'}
+        {clockedIn && head ? t('On the clock since {time}', { time: clockTime(head.clientTs) }) : t('You are off the clock. Tap when your shift starts.')}
       </p>
       {note && <p className="pop mt-2 rounded-xl border-2 border-accent bg-accent-soft px-3 py-2 text-sm text-accent-dark">{note}</p>}
       {error && <p className="pop mt-2 rounded-xl bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}

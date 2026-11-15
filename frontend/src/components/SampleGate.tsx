@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { api } from '../lib/api'
 import { getDeviceId, isDemo, markSampleSeeded, sampleSeeded, setDemo } from '../lib/device'
 import { LogoMark } from './Logo'
+import { t } from '../lib/i18n'
 
 // One request per page load, even when React runs the effect twice in dev.
 let seeding: Promise<void> | null = null
@@ -32,10 +33,10 @@ export default function SampleGate({ children }: { children: ReactNode }) {
         <LogoMark className={`h-16 w-16 ${failed ? '' : 'animate-pulse'}`} />
         {failed ? (
           <>
-            <p className="font-display text-xl font-extrabold">The sample account did not load</p>
-            <p className="max-w-xs text-sm text-muted">We could not reach the server. Check your connection and try again.</p>
+            <p className="font-display text-xl font-extrabold">{t('The sample account did not load')}</p>
+            <p className="max-w-xs text-sm text-muted">{t('We could not reach the server. Check your connection and try again.')}</p>
             <button type="button" className="btn btn-primary" onClick={() => location.reload()}>
-              Try again
+              {t('Try again')}
             </button>
             <button
               type="button"
@@ -45,12 +46,12 @@ export default function SampleGate({ children }: { children: ReactNode }) {
                 location.assign('/')
               }}
             >
-              Go back
+              {t('Go back')}
             </button>
           </>
         ) : (
           <p className="font-display text-xl font-extrabold" role="status">
-            Setting up the sample account...
+            {t('Setting up the sample account...')}
           </p>
         )}
       </div>

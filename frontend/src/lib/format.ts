@@ -1,4 +1,5 @@
 // Display helpers only. All money math happens in the backend rules engine.
+import { getLang } from './i18n'
 
 /** "123.25" -> "$123.25". The input is already an exact cents string. */
 export function money(value: string): string {
@@ -47,15 +48,19 @@ export function clockTime(clientTs: string): string {
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const DAYS_ES = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
+const MONTHS_ES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 
-/** "2026-11-10" -> "Tue, Nov 10". */
+/** "2026-11-10" -> "Tue, Nov 10" or "mar, 10 nov". */
 export function dayLabel(isoDate: string): string {
   const date = new Date(`${isoDate}T00:00:00Z`)
+  if (getLang() === 'es') return `${DAYS_ES[date.getUTCDay()]}, ${date.getUTCDate()} ${MONTHS_ES[date.getUTCMonth()]}`
   return `${DAYS[date.getUTCDay()]}, ${MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}`
 }
 
-/** "2026-11-10" -> "Nov 10". */
+/** "2026-11-10" -> "Nov 10" or "10 nov". */
 export function shortDate(isoDate: string): string {
   const date = new Date(`${isoDate}T00:00:00Z`)
+  if (getLang() === 'es') return `${date.getUTCDate()} ${MONTHS_ES[date.getUTCMonth()]}`
   return `${MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}`
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import fallbackRun from '../../../demo/fallback/run.json'
 import { api, type AgentStep, type Claim } from '../lib/api'
 import { getDeviceId } from '../lib/device'
+import { t } from '../lib/i18n'
 
 const POLL_MS = 2000
 const GIVE_UP_MS = 90_000
@@ -71,17 +72,17 @@ export default function AgentStatus({ claim, ready }: { claim: Claim; ready: boo
       {phase === 'idle' && (
         <>
           <button type="button" className="btn btn-primary" disabled={!ready} onClick={start}>
-            Fill in the claim form for me
+            {t('Fill in the claim form for me')}
           </button>
-          {!ready && <p className="text-sm text-muted">Add your name and your employer's name above first.</p>}
+          {!ready && <p className="text-sm text-muted">{t("Add your name and your employer's name above first.")}</p>}
         </>
       )}
 
       {replayed && (
         <p className="rounded-xl bg-warn-soft px-3 py-2 text-sm font-medium text-warn">
           {fallbackRun.source === 'recorded'
-            ? 'Showing a recorded run.'
-            : 'Showing a sample run. The live agent is not connected right now.'}
+            ? t('Showing a recorded run.')
+            : t('Showing a sample run. The live agent is not connected right now.')}
         </p>
       )}
 
@@ -98,32 +99,32 @@ export default function AgentStatus({ claim, ready }: { claim: Claim; ready: boo
                     <path d="M5 12.5l4.5 4.5L19 7.5" />
                   </svg>
                 )}
-                <span>{step.message}</span>
+                <span>{t(step.message)}</span>
               </li>
             )
           })}
           {running && steps.length === 0 && (
             <li className="flex items-center gap-3 rounded-xl bg-paper px-3 py-2.5 text-[0.95rem] text-muted">
               <span className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-              Starting the agent...
+              {t('Starting the agent...')}
             </li>
           )}
         </ol>
       )}
 
       {phase === 'live' && streamingUrl && (
-        <iframe title="Live view of the agent's browser" src={streamingUrl} className="aspect-video w-full rounded-2xl border border-line bg-white" />
+        <iframe title={t("Live view of the agent's browser")} src={streamingUrl} className="aspect-video w-full rounded-2xl border border-line bg-white" />
       )}
 
       {finished && (
         <div className="pop grid gap-3 rounded-xl border-2 border-accent bg-accent-soft p-4 text-accent-dark">
-          <p className="font-display text-lg font-extrabold">Stopped before submit. Nothing was sent.</p>
-          <p className="text-sm">Read every box yourself. You decide whether to send it.</p>
+          <p className="font-display text-lg font-extrabold">{t('Stopped before submit. Nothing was sent.')}</p>
+          <p className="text-sm">{t('Read every box yourself. You decide whether to send it.')}</p>
           <a href={reviewUrl(claim)} target="_blank" rel="noreferrer" className="btn btn-primary !min-h-12 !text-base">
-            Review the filled form
+            {t('Review the filled form')}
           </a>
           <button type="button" className="text-sm font-semibold underline" onClick={start}>
-            Run it again
+            {t('Run it again')}
           </button>
         </div>
       )}

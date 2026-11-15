@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { SAMPLE_WORKER, isDemo, setDemo } from '../lib/device'
+import { LangSwitch, t } from '../lib/i18n'
 import Logo from './Logo'
 
 const icon = (path: ReactNode) => (
@@ -20,11 +21,10 @@ const TABS = [
 export function Footer() {
   return (
     <footer className="mt-12 border-t-2 border-dashed border-ink/30 pt-6 text-center text-sm leading-relaxed text-muted">
-      <p className="font-display text-lg font-extrabold text-ink">Stay stubborn.</p>
-      <p className="mt-2">Stubborn flags possible underpayment. It is not legal advice.</p>
+      <p className="font-display text-lg font-extrabold text-ink">{t('Stay stubborn.')}</p>
+      <p className="mt-2">{t('Stubborn flags possible underpayment. It is not legal advice.')}</p>
       <p className="mt-1">
-        Built by <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> at <span className="font-bold text-ink">sunhacks 2026</span>, ASU
-        Tempe.
+        {t('Built by')} <a href="https://jayparmar9.vercel.app" target="_blank" rel="noopener noreferrer" className="font-bold text-ink underline decoration-hi decoration-4 underline-offset-4">Jay Parmar</a> {t('at')} <span className="font-bold text-ink">sunhacks 2026</span>, ASU Tempe.
       </p>
     </footer>
   )
@@ -42,11 +42,11 @@ export default function Shell({ children }: { children: ReactNode }) {
     <div className="min-h-dvh overflow-x-clip">
       <header className="sticky top-0 z-20 border-b-2 border-ink bg-paper">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
-          <Link to="/" aria-label="Stubborn home">
+          <Link to="/" aria-label={t('Stubborn home')}>
             <Logo />
           </Link>
           {/* Tablet and desktop: links in the top bar */}
-          <nav className="hidden gap-1 md:flex" aria-label="Main">
+          <nav className="hidden gap-1 md:flex" aria-label={t('Main')}>
             {TABS.map((tab) => (
               <NavLink
                 key={tab.to}
@@ -56,18 +56,21 @@ export default function Shell({ children }: { children: ReactNode }) {
                   `rounded-lg border-2 px-3 py-1.5 text-sm font-bold ${isActive ? 'border-ink bg-hi text-ink' : 'border-transparent text-muted hover:text-ink'}`
                 }
               >
-                {tab.label}
+                {t(tab.label)}
               </NavLink>
             ))}
           </nav>
-          <span className="tag rounded border-2 border-ink px-1.5 py-0.5 md:hidden">sunhacks 2026</span>
+          <div className="flex items-center gap-2">
+            <span className="tag hidden rounded border-2 border-ink px-1.5 py-0.5 min-[400px]:inline md:hidden">sunhacks 2026</span>
+            <LangSwitch />
+          </div>
         </div>
         {sample && (
           <div className="border-t-2 border-ink bg-hi">
             <p className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-1.5 text-sm font-bold">
-              <span>Sample account: {SAMPLE_WORKER.name}</span>
+              <span>{t('Sample account: {name}', { name: SAMPLE_WORKER.name })}</span>
               <button type="button" onClick={leaveSample} className="underline underline-offset-2">
-                Exit
+                {t('Exit')}
               </button>
             </p>
           </div>
@@ -81,7 +84,7 @@ export default function Shell({ children }: { children: ReactNode }) {
       </main>
 
       {/* Phones: nav bar pinned to the bottom, inside thumb reach */}
-      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav aria-label={t('Main')} className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-ink bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
         <div className="mx-auto grid max-w-xl grid-cols-5">
           {TABS.map((tab) => (
             <NavLink
@@ -97,7 +100,7 @@ export default function Shell({ children }: { children: ReactNode }) {
                   <span className={`grid h-8 w-12 place-items-center rounded-lg border-2 ${isActive ? 'border-ink bg-hi' : 'border-transparent'}`}>
                     {tab.icon}
                   </span>
-                  {tab.label}
+                  {t(tab.label)}
                 </>
               )}
             </NavLink>

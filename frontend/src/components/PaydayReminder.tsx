@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../lib/i18n'
 
 // A repeating calendar event for payday, as an .ics file. Works on any phone's
 // calendar app, no install or notification permission needed.
@@ -30,12 +31,12 @@ function buildIcs(weekday: number, every: 1 | 2, hour: number): string {
     `DTSTART:${start}`,
     'DURATION:PT15M',
     `RRULE:FREQ=WEEKLY;INTERVAL=${every};BYDAY=${ICS_DAYS[weekday]}`,
-    'SUMMARY:Payday: snap your pay stub',
-    `DESCRIPTION:Check your stub against your own hours in Stubborn: ${link}`,
+    `SUMMARY:${t('Payday: snap your pay stub')}`,
+    `DESCRIPTION:${t('Check your stub against your own hours in Stubborn:')} ${link}`,
     `URL:${link}`,
     'BEGIN:VALARM',
     'ACTION:DISPLAY',
-    'DESCRIPTION:Payday: snap your pay stub',
+    `DESCRIPTION:${t('Payday: snap your pay stub')}`,
     'TRIGGER:PT0M',
     'END:VALARM',
     'END:VEVENT',
@@ -65,37 +66,37 @@ export default function PaydayReminder() {
   return (
     <section className="card grid gap-3">
       <div>
-        <p className="tag text-muted">Never miss a check</p>
-        <h2 className="mt-1 text-xl font-extrabold">Payday reminder</h2>
-        <p className="mt-1 text-sm text-muted">Adds a repeating reminder to your phone's calendar at 5 PM on payday.</p>
+        <p className="tag text-muted">{t('Never miss a check')}</p>
+        <h2 className="mt-1 text-xl font-extrabold">{t('Payday reminder')}</h2>
+        <p className="mt-1 text-sm text-muted">{t("Adds a repeating reminder to your phone's calendar at 5 PM on payday.")}</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="payday-day" className="label">
-            Payday is on
+            {t('Payday is on')}
           </label>
           <select id="payday-day" className="field" value={weekday} onChange={(e) => setWeekday(Number(e.target.value))}>
             {DAYS.map((day, index) => (
               <option key={day} value={index}>
-                {day}
+                {t(day)}
               </option>
             ))}
           </select>
         </div>
         <div>
           <label htmlFor="payday-every" className="label">
-            How often
+            {t('How often')}
           </label>
           <select id="payday-every" className="field" value={every} onChange={(e) => setEvery(Number(e.target.value) as 1 | 2)}>
-            <option value={1}>Every week</option>
-            <option value={2}>Every 2 weeks</option>
+            <option value={1}>{t('Every week')}</option>
+            <option value={2}>{t('Every 2 weeks')}</option>
           </select>
         </div>
       </div>
       <button type="button" className="btn btn-secondary" onClick={download}>
-        Add to my calendar
+        {t('Add to my calendar')}
       </button>
-      {added && <p className="text-sm text-muted">Open the downloaded file to add it to your calendar.</p>}
+      {added && <p className="text-sm text-muted">{t('Open the downloaded file to add it to your calendar.')}</p>}
     </section>
   )
 }

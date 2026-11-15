@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import SampleGate from './components/SampleGate'
+import { LangProvider } from './lib/i18n'
 import Shell from './components/Shell'
 import Act from './pages/Act'
 import Check from './pages/Check'
@@ -19,6 +20,7 @@ const page = (element: React.ReactNode) => (
 export default function App() {
   return (
     <BrowserRouter>
+      <LangProvider>
       <Routes>
         <Route path="/" element={page(<Home />)} />
         <Route path="/log" element={page(<Log />)} />
@@ -32,6 +34,7 @@ export default function App() {
         <Route path="/v/:shareId" element={<Packet />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </LangProvider>
     </BrowserRouter>
   )
 }

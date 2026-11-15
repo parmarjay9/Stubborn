@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { t } from '../lib/i18n'
 
 const MAX_SIDE = 2200
 
@@ -18,7 +19,7 @@ export async function prepareImage(file: File): Promise<Blob> {
     // Fall through and let the type check below decide.
   }
   if (file.type === 'image/jpeg' || file.type === 'image/png') return file
-  throw new Error('Please use a JPEG or PNG photo of your pay stub.')
+  throw new Error(t('Please use a JPEG or PNG photo of your pay stub.'))
 }
 
 export default function StubUpload({ onPick, onManual }: { onPick: (file: File) => void; onManual: () => void }) {
@@ -38,19 +39,19 @@ export default function StubUpload({ onPick, onManual }: { onPick: (file: File) 
           <path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" />
           <path d="M9 8h6M9 12h6M9 16h3" />
         </svg>
-        <p className="font-semibold">Lay the stub flat in good light</p>
-        <p className="max-w-xs text-sm text-muted">Make sure the hours, rate, gross pay and pay period dates are in the picture.</p>
+        <p className="font-semibold">{t('Lay the stub flat in good light')}</p>
+        <p className="max-w-xs text-sm text-muted">{t('Make sure the hours, rate, gross pay and pay period dates are in the picture.')}</p>
       </div>
       <input ref={camera} type="file" accept="image/*" capture="environment" className="hidden" onChange={picked} />
       <input ref={library} type="file" accept="image/jpeg,image/png" className="hidden" onChange={picked} />
       <button type="button" className="btn btn-primary" onClick={() => camera.current?.click()}>
-        Take a photo
+        {t('Take a photo')}
       </button>
       <button type="button" className="btn btn-secondary" onClick={() => library.current?.click()}>
-        Choose a picture
+        {t('Choose a picture')}
       </button>
       <button type="button" className="min-h-12 text-sm font-semibold text-muted underline" onClick={onManual}>
-        Type the numbers in instead
+        {t('Type the numbers in instead')}
       </button>
     </div>
   )

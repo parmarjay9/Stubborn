@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Letters } from '../lib/api'
+import { t } from '../lib/i18n'
 
 type Tab = 'managerMessage' | 'complaintSummary'
 
@@ -46,7 +47,7 @@ export default function LetterView({ letters }: { letters: Letters }) {
             }}
             className={`min-h-11 rounded-lg text-sm font-bold ${tab === item.id ? 'bg-hi text-ink' : 'text-muted'}`}
           >
-            {item.label}
+            {t(item.label)}
           </button>
         ))}
       </div>
@@ -59,7 +60,7 @@ export default function LetterView({ letters }: { letters: Letters }) {
           className="btn btn-secondary !min-h-12 !text-base"
           onClick={async () => setCopied(await copyText(text))}
         >
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? t('Copied') : t('Copy')}
         </button>
         <button
           type="button"
@@ -67,15 +68,15 @@ export default function LetterView({ letters }: { letters: Letters }) {
           disabled={!navigator.share}
           onClick={() => navigator.share?.({ text }).catch(() => {})}
         >
-          Share
+          {t('Share')}
         </button>
       </div>
 
       <p className="text-xs text-muted">
         {letters.source === 'bedrock'
-          ? 'Drafted by Claude on Amazon Bedrock. Every dollar amount was checked against the rules engine.'
-          : 'Written from a template using the numbers from your result.'}{' '}
-        Read it over and change anything before you send it.
+          ? t('Drafted by Claude on Amazon Bedrock. Every dollar amount was checked against the rules engine.')
+          : t('Written from a template using the numbers from your result.')}{' '}
+        {t('Read it over and change anything before you send it.')}
       </p>
     </div>
   )

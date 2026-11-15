@@ -167,3 +167,22 @@ def test_no_floats_and_no_em_dashes_in_output():
     assert chr(8212) not in text
     for value in result["totals"].values():
         assert isinstance(value, str)
+
+
+def test_every_finding_carries_its_numbers_for_translation():
+    cases = [
+        run(make_entries(DEMO_WEEK), stub(regularHoursPaid="38.00", grossPay="646.00")),
+        run(make_entries(FORTY), stub()),
+        run(make_entries(FORTY), stub(hourlyRate="12.00", grossPay="480.00")),
+        run(make_entries(FORTY[:4]), stub()),
+        run(make_entries([day(d, "08:00", "17:00") for d in (9, 10, 11, 12, 13)]), stub(regularHoursPaid="45.00", grossPay="765.00")),
+    ]
+    for result in cases:
+        for finding in result["findings"]:
+            assert finding["params"], finding["code"]
+            # every number in the English label comes from params
+            for value in finding["params"].values():
+                assert isinstance(value, str)
+    demo = cases[0]["findings"]
+    assert demo[0]["params"] == {"missing": "5.5", "logged": "43.5", "paid": "38"}
+    assert demo[-1]["params"]["owed"] == "$123.25"

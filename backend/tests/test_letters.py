@@ -37,3 +37,9 @@ def test_allowed_amounts_cover_the_engine_figures():
 def test_letters_never_claim_lawbreaking():
     text = " ".join(template_letters(CHECK, WORKER).values()).lower()
     assert "broke the law" not in text and "illegal" not in text
+
+
+def test_spanish_template_uses_only_engine_numbers():
+    letters = template_letters(CHECK, WORKER, "es")
+    assert "$123.25" in letters["managerMessage"] and "posiblemente" in letters["managerMessage"]
+    assert only_engine_numbers(letters, CHECK)

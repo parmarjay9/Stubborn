@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { t } from '../lib/i18n'
 
 const STEPS = [
   { to: '/log', label: 'Record' },
@@ -9,7 +10,7 @@ const STEPS = [
 /** Shows where this screen sits in the three-part process. */
 export default function StepTrail({ current }: { current: 1 | 2 | 3 }) {
   return (
-    <ol className="flex items-center gap-1.5" aria-label="Where you are in the process">
+    <ol className="flex items-center gap-1.5" aria-label={t('Where you are in the process')}>
       {STEPS.map((step, index) => {
         const number = index + 1
         const active = number === current
@@ -24,7 +25,7 @@ export default function StepTrail({ current }: { current: 1 | 2 | 3 }) {
               }`}
             >
               <span>{number}</span>
-              {step.label}
+              {t(step.label)}
             </Link>
           </li>
         )

@@ -27,6 +27,12 @@ Rules:
 
 Reply with JSON only: {"managerMessage": "...", "complaintSummary": "..."}"""
 
+SPANISH = """
+
+Write both texts in clear, friendly Spanish, the way a worker in Arizona would write to a manager.
+Keep every dollar amount exactly as given, with the dollar sign first and a period for cents, like $123.25.
+Keep dates as given."""
+
 OUTPUT_SCHEMA = {
     "type": "object",
     "properties": {"managerMessage": {"type": "string"}, "complaintSummary": {"type": "string"}},
@@ -79,8 +85,10 @@ def _hours(value):
     return text.rstrip("0").rstrip(".") if "." in text else text
 
 
-def template_letters(check, worker):
+def template_letters(check, worker, lang="en"):
     """Deterministic fallback. Uses engine numbers only."""
+    if lang == "es":
+        return template_letters_es(check, worker)
     totals, period = check["totals"], check["payPeriod"]
     name = worker.get("name") or "[your name]"
     employer = worker.get("employer") or "the employer"
@@ -105,7 +113,31 @@ def template_letters(check, worker):
     }
 
 
-def _ask_claude(check, worker):
+def template_letters_es(check, worker):
+    totals, period = check["totals"], check["payPeriod"]
+    name = worker.get("name") or "[su nombre]"
+    employer = worker.get("employer") or "el empleador"
+    manager = worker.get("managerName") or ""
+    owed, span = _money(totals["owed"]), f"{period['start']} al {period['end']}"
+    logged, paid = _hours(totals["loggedHours"]), _hours(totals["paidHours"])
+    return {
+        "managerMessage": (
+            f"Hola{(' ' + manager) if manager else ''},\n\nEstaba revisando mi talón de pago del {span} y creo que puede faltar algo. "
+            f"Mi propio registro muestra {logged} horas en ese periodo y el talón muestra {paid} horas pagadas. "
+            f"Según mis cuentas, posiblemente se me deben {owed}.\n\n"
+            f"¿Podría revisar los registros y avisarme? Con gusto le comparto mi registro de horas.\n\nGracias,\n{name}"
+        ),
+        "complaintSummary": (
+            f"{name} trabajó para {employer} como empleado por hora a {_money(check['rate'])} por hora. "
+            f"Para el periodo de pago del {span}, el registro de horas del trabajador muestra {logged} horas trabajadas. "
+            f"El talón de pago muestra {paid} horas pagadas y un pago bruto de {_money(totals['grossPay'])}. "
+            f"El pago bruto esperado por las horas registradas es {_money(totals['expectedGross'])}. "
+            f"La cantidad que posiblemente se debe es {owed}."
+        ),
+    }
+
+
+def _ask_claude(check, worker, lang="en"):
     if AnthropicBedrockMantle is None:
         raise RuntimeError("Anthropic SDK not installed")
     client = AnthropicBedrockMantle(aws_region=config.BEDROCK_REGION, timeout=8.0, max_retries=0)
@@ -119,7 +151,7 @@ def _ask_claude(check, worker):
     response = client.messages.create(
         model=config.BEDROCK_MODEL_ID,
         max_tokens=2000,
-        system=SYSTEM_PROMPT,
+        system=SYSTEM_PROMPT + (SPANISH if lang == "es" else ""),
         output_config={"effort": "low", "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
         messages=[{"role": "user", "content": json.dumps(facts)}],
     )
@@ -133,6 +165,7 @@ def _ask_claude(check, worker):
 def letters(event):
     body = body_of(event)
     check, worker = body.get("check"), body.get("worker") or {}
+    lang = "es" if body.get("lang") == "es" else "en"
     if not isinstance(check, dict) or "totals" not in check or "findings" not in check:
         raise BadRequest("Run a pay stub check first.")
     if len(json.dumps(check, default=str)) > 30_000 or len(check.get("findings") or []) > 12:
@@ -145,7 +178,7 @@ def letters(event):
 
     for attempt in (1, 2):  # regenerate once, then use the template
         try:
-            drafted = _ask_claude(check, worker)
+            drafted = _ask_claude(check, worker, lang)
             if only_engine_numbers(drafted, check):
                 return 200, {**drafted, "source": "bedrock"}
             print(f"Letters attempt {attempt}: output had numbers the engine did not produce.")
@@ -155,7 +188,7 @@ def letters(event):
             status = getattr(err, "status_code", None)
             if (status is not None and 400 <= status < 500 and status != 429) or isinstance(err, RuntimeError):
                 break
-    return 200, {**template_letters(check, worker), "source": "template"}
+    return 200, {**template_letters(check, worker, lang), "source": "template"}
 
 
 handler = route({"POST /letters": letters})

@@ -206,6 +206,7 @@ def check_pay(
             "label": f"{hours_text(missing_hours)} logged hours were not paid",
             "math": f"{hours_text(logged)} hours logged - {hours_text(paid_hours)} hours on the stub = {hours_text(missing_hours)} hours",
             "amount": None,
+            "params": {"missing": hours_text(missing_hours), "logged": hours_text(logged), "paid": hours_text(paid_hours)},
         })
         ot_missing = min(ot_short, missing_hours)
         regular_missing = missing_hours - ot_missing
@@ -217,6 +218,7 @@ def check_pay(
                 "label": f"{hours_text(regular_missing)} of those hours were regular time at {money(effective_rate)}/hr",
                 "math": f"{hours_text(regular_missing)} x {money(effective_rate)} = {money(amount)}",
                 "amount": _plain(amount),
+                "params": {"hours": hours_text(regular_missing), "rate": money(effective_rate), "amount": money(amount)},
             })
         if ot_missing > 0:
             amount = _cents(ot_missing * overtime_rate)
@@ -230,6 +232,9 @@ def check_pay(
                     f"{hours_text(overtime_threshold)} in a workweek."
                 ),
                 "amount": _plain(amount),
+                "params": {"hours": hours_text(ot_missing), "otRate": money(overtime_rate), "amount": money(amount),
+                           "mult": hours_text(overtime_multiplier), "rate": money(effective_rate),
+                           "threshold": hours_text(overtime_threshold)},
             })
     elif missing_hours < 0:
         findings.append({
@@ -237,6 +242,7 @@ def check_pay(
             "label": f"The stub shows {hours_text(-missing_hours)} more hours than your log",
             "math": f"{hours_text(paid_hours)} hours on the stub - {hours_text(logged)} hours logged = {hours_text(-missing_hours)} hours",
             "amount": None,
+            "params": {"extra": hours_text(-missing_hours), "paid": hours_text(paid_hours), "logged": hours_text(logged)},
         })
 
     ot_straight = ot_short - ot_missing
@@ -249,6 +255,8 @@ def check_pay(
             "label": f"{hours_text(ot_straight)} overtime hours look like they were paid at the regular rate instead of {money(overtime_rate)}/hr",
             "math": f"{hours_text(ot_straight)} x {money(premium_rate)} extra per overtime hour = {money(amount)}",
             "amount": _plain(amount),
+            "params": {"hours": hours_text(ot_straight), "otRate": money(overtime_rate), "premium": money(premium_rate),
+                       "amount": money(amount)},
         })
 
     remainder = owed - explained
@@ -262,6 +270,7 @@ def check_pay(
                 if amount else f"Expected pay is figured at {money(min_wage)}/hr."
             ),
             "amount": _plain(amount) if amount else None,
+            "params": {"rate": money(rate), "min": money(min_wage), "amount": money(amount) if amount else ""},
         })
     elif remainder > 0:
         findings.append({
@@ -269,6 +278,7 @@ def check_pay(
             "label": f"The gross pay is {money(remainder)} lower than the hours and rate on the stub add up to",
             "math": f"{money(owed)} total gap - {money(explained)} explained above = {money(remainder)}",
             "amount": _plain(remainder),
+            "params": {"remainder": money(remainder), "owed": money(owed), "explained": money(explained)},
         })
 
     if owed > 0:
@@ -277,6 +287,7 @@ def check_pay(
             "label": f"Total possibly owed: {money(owed)}",
             "math": f"{money(expected_gross)} expected for your logged hours - {money(gross_pay)} gross pay on the stub = {money(owed)}",
             "amount": _plain(owed),
+            "params": {"owed": money(owed), "expected": money(expected_gross), "gross": money(gross_pay)},
         })
     elif not rate_below_minimum:
         findings.append({
@@ -284,6 +295,7 @@ def check_pay(
             "label": "Your pay stub covers the hours in your log. Nothing looks missing.",
             "math": f"{money(expected_gross)} expected for your logged hours, {money(gross_pay)} gross pay on the stub",
             "amount": None,
+            "params": {"expected": money(expected_gross), "gross": money(gross_pay)},
         })
 
     return {
