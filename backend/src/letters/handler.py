@@ -3,6 +3,11 @@ summary from a check result. The model only writes words. Every dollar amount
 in its output must already exist in the engine's result, or we fall back."""
 import json
 import re
+
+try:  # imported at load time so a cold start pays for it once, before the request
+    from anthropic import AnthropicBedrockMantle
+except ImportError:  # local runs without the SDK use the template
+    AnthropicBedrockMantle = None
 from decimal import Decimal, InvalidOperation
 
 from common import config
@@ -101,8 +106,8 @@ def template_letters(check, worker):
 
 
 def _ask_claude(check, worker):
-    from anthropic import AnthropicBedrockMantle
-
+    if AnthropicBedrockMantle is None:
+        raise RuntimeError("Anthropic SDK not installed")
     client = AnthropicBedrockMantle(aws_region=config.BEDROCK_REGION, timeout=8.0, max_retries=0)
     facts = {
         "worker": {k: worker.get(k) for k in ("name", "employer", "managerName") if worker.get(k)},
@@ -130,6 +135,11 @@ def letters(event):
     check, worker = body.get("check"), body.get("worker") or {}
     if not isinstance(check, dict) or "totals" not in check or "findings" not in check:
         raise BadRequest("Run a pay stub check first.")
+    if len(json.dumps(check, default=str)) > 30_000 or len(check.get("findings") or []) > 12:
+        raise BadRequest("That check result is too large.", 413)
+    if not isinstance(worker, dict):
+        raise BadRequest("Invalid worker details.")
+    worker = {key: str(worker.get(key) or "")[:120] for key in ("name", "employer", "managerName")}
     # body_of parses numbers as Decimal; the check result only uses strings.
     check = json.loads(json.dumps(check, default=str))
 
@@ -141,7 +151,9 @@ def letters(event):
             print(f"Letters attempt {attempt}: output had numbers the engine did not produce.")
         except Exception as err:
             print(f"Letters attempt {attempt} failed: {err!r}")
-            if attempt == 1 and type(err).__name__ in ("ModuleNotFoundError", "NoCredentialsError"):
+            # A 4xx (no access, unknown model, bad request) will not fix itself on retry.
+            status = getattr(err, "status_code", None)
+            if (status is not None and 400 <= status < 500 and status != 429) or isinstance(err, RuntimeError):
                 break
     return 200, {**template_letters(check, worker), "source": "template"}
 

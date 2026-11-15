@@ -82,7 +82,13 @@ def upload_url(event):
     if config.LOCAL:
         return 200, {"key": key, "uploadUrl": f"/local-upload/{key}"}
     import boto3
-    url = boto3.client("s3").generate_presigned_url(
+    from botocore.config import Config
+    # Sign against the regional endpoint: a new bucket answers the global one
+    # with a redirect, which a phone's PUT upload does not follow.
+    region = os.environ.get("AWS_REGION", "us-west-2")
+    s3 = boto3.client("s3", region_name=region, endpoint_url=f"https://s3.{region}.amazonaws.com",
+                      config=Config(signature_version="s3v4", s3={"addressing_style": "virtual"}))
+    url = s3.generate_presigned_url(
         "put_object",
         Params={"Bucket": os.environ["STUB_BUCKET"], "Key": key, "ContentType": content_type},
         ExpiresIn=300,
@@ -104,6 +110,13 @@ def extract(event):
         with open(path, "rb") as fh:
             document = {"Bytes": fh.read()}
     else:
+        import boto3
+        try:
+            size = boto3.client("s3").head_object(Bucket=os.environ["STUB_BUCKET"], Key=key)["ContentLength"]
+        except Exception:
+            raise BadRequest("Unknown upload.")
+        if size > 10 * 1024 * 1024:
+            raise BadRequest("That photo is too large. Please use one under 10 MB.")
         document = {"S3Object": {"Bucket": os.environ["STUB_BUCKET"], "Name": key}}
 
     try:

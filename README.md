@@ -46,22 +46,32 @@ cd frontend && npx vitest run                    # hash chain matches the Python
 
 The demo case is a test: 43.5 hours logged at $17.00, stub pays 38 regular hours, gross $646.00. Expected gross is $769.25, so **$123.25** is possibly owed.
 
+## Live
+
+- Website: https://main.d3ephm9p0a7e00.amplifyapp.com (AWS Amplify)
+- API: https://j1m5comkbd.execute-api.us-west-2.amazonaws.com (API Gateway + Lambda, us-west-2)
+
 ## Deploy
 
 ```bash
-# 1. TinyFish key goes in SSM, never in the repo
-aws ssm put-parameter --name /stubborn/tinyfish-api-key --type SecureString --value "YOUR_KEY"
-
-# 2. Backend
-cd backend && sam build && sam deploy --guided
-#    Parameters: FrontendUrl (public https URL of the app), BedrockModelId
-
-# 3. Frontend: set VITE_API_URL to the ApiUrl stack output, then host frontend/ on AWS Amplify
+aws login --region us-west-2      # browser sign-in; credentials stay in ~/.aws, never in the repo
+scripts/deploy.sh                 # backend (SAM) then frontend (Amplify zip upload)
+scripts/deploy.sh frontend        # just the website
 ```
 
-On Amplify, add a rewrite rule so page refreshes work in the single page app: source `</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff2?|ttf|map|json|webmanifest)$)([^.]+$)/>`, target `/index.html`, type `200 (Rewrite)`.
+The TinyFish key lives only in AWS SSM Parameter Store:
 
-Before the first deploy, request access to a Claude model in the Bedrock console and confirm the model ID that `BedrockModelId` should use.
+```bash
+aws ssm put-parameter --name /stubborn/tinyfish-api-key --type SecureString --region us-west-2 --value "YOUR_KEY"
+```
+
+Claude on Bedrock needs model access in the Bedrock console. Until it is granted, letters fall back to a template built from the same engine numbers.
+
+### Keeping secrets out of git
+
+- `.gitignore` covers `.env` files, keys and certificates, `samconfig.toml`, `.aws/`, build output and local data.
+- `.githooks/pre-commit` blocks commits that contain AWS keys, Anthropic keys, private keys or API key values. Turn it on once per clone with `git config core.hooksPath .githooks`.
+- API Gateway rate limits every route, with tighter limits on the paid routes (Textract, Bedrock, TinyFish), so nobody can run up the bill.
 
 ## How it is built
 

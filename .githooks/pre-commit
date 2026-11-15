@@ -1,0 +1,21 @@
+#!/bin/sh
+# Blocks a commit if the staged changes look like they contain a secret.
+# Enabled with: git config core.hooksPath .githooks
+
+patterns='AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|aws_secret_access_key|aws_session_token|sk-ant-[A-Za-z0-9_-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY|"?[Xx]-[Aa][Pp][Ii]-[Kk]ey"?[:=] *"?[A-Za-z0-9_-]{16,}|TINYFISH_API_KEY *= *[A-Za-z0-9_-]{8,}'
+
+bad_files=$(git diff --cached --name-only --diff-filter=AM | grep -E '(^|/)\.env($|\.)|\.pem$|\.key$|(^|/)credentials$|samconfig\.toml$' | grep -v '\.env\.example$')
+if [ -n "$bad_files" ]; then
+  echo "Commit blocked: these files should not be committed:"
+  echo "$bad_files"
+  exit 1
+fi
+
+hits=$(git diff --cached -U0 --diff-filter=AM -- . ':(exclude).githooks/pre-commit' | grep -E '^\+' | grep -E "$patterns")
+if [ -n "$hits" ]; then
+  echo "Commit blocked: the staged changes look like they contain a secret:"
+  echo "$hits" | cut -c1-120
+  echo "Move it to SSM Parameter Store or a gitignored .env file."
+  exit 1
+fi
+exit 0

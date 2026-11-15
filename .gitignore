@@ -1,13 +1,38 @@
+# Dependencies and builds
 node_modules/
 dist/
-.aws-sam/
-samconfig.toml
-.env
-.env.*
-!.env.example
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
-.venv/
+
+# AWS SAM build output and local deploy settings (bucket names, account details)
+.aws-sam/
+samconfig.toml
+
+# Secrets: never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.aws/
+credentials
+*secret*
+!**/*secret*.md
+
+# Local dev data (JSON database, uploaded stub photos)
 .local/
+*.local
+
+# Demo recordings are large; keep them out of git
+demo/fallback/*.mp4
+demo/fallback/*.mov
+
+# Editors and OS
 .DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.claude/*.local.json

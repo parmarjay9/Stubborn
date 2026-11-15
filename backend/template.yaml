@@ -42,6 +42,16 @@ Resources:
   Api:
     Type: AWS::Serverless::HttpApi
     Properties:
+      # Rate limits keep someone from running up the bill. Paid AI routes get tighter ones.
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 10
+      RouteSettings:
+        "POST /letters": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
+        "POST /agent/start": { ThrottlingBurstLimit: 2, ThrottlingRateLimit: 0.2 }
+        "POST /stub/extract": { ThrottlingBurstLimit: 3, ThrottlingRateLimit: 1 }
+        "POST /stub/upload-url": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
+        "POST /shifts/demo": { ThrottlingBurstLimit: 5, ThrottlingRateLimit: 2 }
       CorsConfiguration:
         AllowOrigins: ["*"]
         AllowMethods: [GET, POST, OPTIONS]

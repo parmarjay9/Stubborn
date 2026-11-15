@@ -17,9 +17,7 @@ export default function Logo() {
   return (
     <span className="flex items-center gap-2 font-display text-[1.4rem] font-extrabold tracking-tight text-ink">
       <LogoMark />
-      <span>
-        Stub<span className="hl">born</span>
-      </span>
+      <span>Stubborn</span>
     </span>
   )
 }
