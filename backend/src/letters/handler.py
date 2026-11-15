@@ -5,9 +5,9 @@ import json
 import re
 
 try:  # imported at load time so a cold start pays for it once, before the request
-    from anthropic import AnthropicBedrockMantle
+    from anthropic import AnthropicBedrock
 except ImportError:  # local runs without the SDK use the template
-    AnthropicBedrockMantle = None
+    AnthropicBedrock = None
 from decimal import Decimal, InvalidOperation
 
 from common import config
@@ -153,9 +153,10 @@ def template_letters_es(check, worker):
 
 
 def _ask_claude(check, worker, lang="en"):
-    if AnthropicBedrockMantle is None:
+    if AnthropicBedrock is None:
         raise RuntimeError("Anthropic SDK not installed")
-    client = AnthropicBedrockMantle(aws_region=config.BEDROCK_REGION, timeout=8.0, max_retries=0)
+    # The standard Bedrock runtime route. The model ID is a cross-region inference profile.
+    client = AnthropicBedrock(aws_region=config.BEDROCK_REGION, timeout=12.0, max_retries=0)
     facts = {
         "worker": {k: worker.get(k) for k in ("name", "employer", "managerName") if worker.get(k)},
         "payPeriod": period_text(check["payPeriod"], lang),
@@ -167,7 +168,6 @@ def _ask_claude(check, worker, lang="en"):
         model=config.BEDROCK_MODEL_ID,
         max_tokens=2000,
         system=SYSTEM_PROMPT + (SPANISH if lang == "es" else ""),
-        output_config={"effort": "low", "format": {"type": "json_schema", "schema": OUTPUT_SCHEMA}},
         messages=[{"role": "user", "content": json.dumps(facts)}],
     )
     if response.stop_reason == "refusal":

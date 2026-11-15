@@ -469,3 +469,13 @@ Object.assign(ES, {
   'Report all fields filled successfully': 'Informar que todas las casillas se llenaron',
   'Task completed': 'Tarea terminada',
 })
+
+// Sample pay stub on the Check page
+Object.assign(ES, {
+  'Sample account': 'Cuenta de ejemplo',
+  "{name}'s pay stub for Nov 8 to Nov 14": 'Talón de pago de {name} del 8 al 14 de noviembre',
+  'Sample pay stub': 'Talón de pago de ejemplo',
+  'This is the stub for the one week that has not been checked yet. Use it to see the whole check, the same as if you had photographed it.':
+    'Este es el talón de la única semana que falta revisar. Úselo para ver toda la revisión, igual que si le hubiera tomado una foto.',
+  'Use this sample pay stub': 'Usar este talón de ejemplo',
+})

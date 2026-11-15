@@ -1,6 +1,6 @@
 // Minimal service worker: makes the app installable and keeps the shell
 // available offline. API calls are never cached.
-const CACHE = 'stubborn-shell-v2'
+const CACHE = 'stubborn-shell-v3'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(['/', '/manifest.webmanifest', '/logo.svg', '/icon-192.png'])))

@@ -9,7 +9,7 @@ Parameters:
     Description: Public https URL of the deployed frontend (Amplify or custom domain). The agent opens the demo claim form there.
   BedrockModelId:
     Type: String
-    Default: anthropic.claude-opus-5-5
+    Default: us.anthropic.claude-sonnet-4-6
     Description: Claude model ID on Bedrock. Confirm it in the Bedrock console and request model access first.
   TinyFishKeyParam:
     Type: String

@@ -4,7 +4,7 @@ import ConfirmFields from '../components/ConfirmFields'
 import StepTrail from '../components/StepTrail'
 import StubUpload, { prepareImage } from '../components/StubUpload'
 import { api, uploadStub, type StubFieldName, type StubFields } from '../lib/api'
-import { getDeviceId } from '../lib/device'
+import { SAMPLE_WORKER, getDeviceId, isDemo } from '../lib/device'
 import { store } from '../lib/store'
 import { t } from '../lib/i18n'
 
@@ -57,6 +57,16 @@ export default function Check() {
     }
   }
 
+  /** The sample account has no paper stub to photograph, so it ships with one. */
+  async function useSample() {
+    try {
+      const blob = await (await fetch('/sample-stub.png')).blob()
+      await read(new File([blob], 'sample-stub.png', { type: 'image/png' }))
+    } catch {
+      setError(t('We could not read that photo.'))
+    }
+  }
+
   async function confirm(values: StubFields) {
     setChecking(true)
     setError(null)
@@ -82,6 +92,21 @@ export default function Check() {
       {stage === 'upload' && (
         <>
           {error && <p className="rounded-xl bg-bad-soft px-3 py-2 text-sm text-bad">{error}</p>}
+          {isDemo() && (
+            <section className="rounded-2xl border-2 border-dashed border-ink bg-hi-soft p-4">
+              <p className="tag text-muted">{t('Sample account')}</p>
+              <h2 className="mt-1 text-xl font-extrabold">{t("{name}'s pay stub for Nov 8 to Nov 14", { name: SAMPLE_WORKER.name })}</h2>
+              <div className="mt-3 flex items-start gap-4">
+                <img src="/sample-stub.png" alt={t('Sample pay stub')} className="w-28 shrink-0 rounded border-2 border-ink bg-white" />
+                <p className="text-sm leading-snug text-muted">
+                  {t('This is the stub for the one week that has not been checked yet. Use it to see the whole check, the same as if you had photographed it.')}
+                </p>
+              </div>
+              <button type="button" className="btn btn-primary mt-4" onClick={useSample}>
+                {t('Use this sample pay stub')}
+              </button>
+            </section>
+          )}
           <StubUpload
             onPick={read}
             onManual={() => {

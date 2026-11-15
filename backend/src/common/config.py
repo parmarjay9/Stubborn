@@ -21,9 +21,10 @@ ZERO_HASH = "0" * 64
 
 DEMO_MODE = os.environ.get("DEMO_MODE", "1") == "1"
 
-# Bedrock. Confirm the model ID in the Bedrock console and request access
-# before the demo; override with the BedrockModelId stack parameter.
-BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-opus-5-5")
+# Bedrock. Claude Sonnet 4.6 is the model this AWS account has an accepted
+# Marketplace agreement for (2026-11-15). The ID is its US cross-region
+# inference profile. Override with the BedrockModelId stack parameter.
+BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-4-6")
 BEDROCK_REGION = os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_REGION", "us-west-2")
 
 # TinyFish Web Agent API (docs.tinyfish.ai, checked 2026-11-14).
