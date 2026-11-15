@@ -62,7 +62,7 @@ export const ES: Record<string, string> = {
   'Your first clock-in starts the chain.': 'Su primera entrada empieza la cadena.',
   'Every entry is fingerprinted and chained to the one before it.': 'Cada entrada tiene una huella digital y está encadenada a la anterior.',
   'Try it': 'Pruébelo',
-  'Go on, try to fudge an entry': 'Ándele, intente alterar una entrada',
+  'Go on, try to fudge an entry': 'Adelante, intente alterar una entrada',
   IN: 'ENTRADA',
   OUT: 'SALIDA',
   'Each entry gets a fingerprint (the # code) made from its own details plus the fingerprint before it.':
@@ -252,7 +252,7 @@ export const ES: Record<string, string> = {
   'Clock in for a few shifts, then check a pay stub. Each pay period will show up here with your hours next to what the stub paid.':
     'Marque algunos turnos y luego revise un talón de pago. Cada periodo aparecerá aquí con sus horas junto a lo que pagó el talón.',
   'Resetting...': 'Restableciendo...',
-  'Reset the sample account to its starting point': 'Restablecer la cuenta de ejemplo a como empezó',
+  'Reset the sample account to its starting point': 'Volver a empezar la cuenta de ejemplo',
 
   // home
   Out: 'Sal.',
