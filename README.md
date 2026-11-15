@@ -10,6 +10,15 @@ A mobile-first web app that helps hourly workers catch unpaid wages. Built solo 
 
 Stubborn flags possible underpayment. It is not legal advice.
 
+### Also built in
+
+- **Clock in without signal.** Taps are hashed and chained on the phone, saved there when there is no connection, and sent in order once the phone is back online. The server still checks every hash and records when it really got each one.
+- **Evidence packet.** One page per pay check with a QR code (`/v/<id>`). Whoever opens it recomputes every fingerprint in their own browser, sees the server's check and the locked seal, and can save it as a PDF. The link is read-only.
+- **Nightly locked seal.** At 11:59 PM Arizona time, a Lambda writes every log's newest fingerprint to an S3 bucket with Object Lock (governance mode, 30 days). Device ids are salted and hashed in the seal. This catches even a chain that someone rewrote with fresh hashes.
+- **Device secrets.** Each phone has a private secret next to its device id. The first phone to use a log registers it, and every read or write of that log must present it, so a device id seen in a share link gives no access.
+- **Spanish.** EN/ES switch on every screen and the packet. The rules engine returns each finding's numbers separately, so numbers never pass through translation. Claude writes the letters in Spanish, with the same dollar-amount check.
+- **Payday reminder.** A repeating calendar event (.ics) for weekly or biweekly paydays.
+
 ## Run it locally
 
 No AWS account is needed for local development. The same Lambda handlers run behind a small local server with JSON file storage.
@@ -79,8 +88,9 @@ Claude on Bedrock needs model access in the Bedrock console. Until it is granted
 |---|---|
 | React + Vite + TypeScript + Tailwind | Mobile-first installable web app. Bottom nav on phones, top nav on wider screens. |
 | API Gateway (HTTP API) + Lambda (Python 3.12) | All endpoints. Defined in `backend/template.yaml` with AWS SAM. |
-| DynamoDB | Shift entries, check results (these drive the History page), agent runs. |
+| DynamoDB | Shift entries, check results (these drive the History page), agent runs, share links, device secret hashes. |
 | S3 | Pay stub photos, uploaded with a presigned URL and deleted after 7 days. |
+| S3 Object Lock + EventBridge Scheduler | Nightly sealed copy of every log's latest fingerprint that cannot be edited or deleted for 30 days. |
 | Amazon Textract | `AnalyzeDocument` with Queries reads the stub. Fields under 80% confidence are highlighted for the worker to check. |
 | Rules engine (`backend/src/rules/engine.py`) | Pure functions, `Decimal` only. Pairs shifts, splits them by workweek, applies overtime and minimum wage, itemizes findings. |
 | Amazon Bedrock (Claude) | Writes the two letters. Every dollar amount in the output must already exist in the engine result, or it regenerates once and then falls back to a template. |

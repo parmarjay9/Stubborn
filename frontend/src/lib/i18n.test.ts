@@ -13,7 +13,7 @@ describe('Spanish table', () => {
   it('has no empty strings and no em dashes', () => {
     for (const [english, spanish] of Object.entries(ES)) {
       expect(spanish.trim(), english).not.toBe('')
-      expect(spanish, english).not.toContain('—')
+      expect(spanish, english).not.toContain(String.fromCharCode(0x2014))
     }
   })
 })
