@@ -13,7 +13,7 @@ Stubborn flags possible underpayment. It is not legal advice.
 ### Also built in
 
 - **Clock in without signal.** Taps are hashed and chained on the phone, saved there when there is no connection, and sent in order once the phone is back online. The server still checks every hash and records when it really got each one.
-- **Evidence packet.** One page per pay check with a QR code (`/v/<id>`). Whoever opens it recomputes every fingerprint in their own browser, sees the server's check and the locked seal, and can save it as a PDF. The link is read-only.
+- **Evidence packet.** One page per pay check with a QR code (`/v/<id>`). Whoever opens it recomputes every fingerprint in their own browser, sees the server's check, and can save it as a PDF. If the log no longer matches its nightly seal, the packet says it was changed. The link is read-only.
 - **Nightly locked seal.** At 11:59 PM Arizona time, a Lambda writes every log's newest fingerprint to an S3 bucket with Object Lock (governance mode, 30 days). Device ids are salted and hashed in the seal. This catches even a chain that someone rewrote with fresh hashes.
 - **Device secrets.** Each phone has a private secret next to its device id. The first phone to use a log registers it, and every read or write of that log must present it, so a device id seen in a share link gives no access.
 - **Spanish.** EN/ES switch on every screen and the packet. The rules engine returns each finding's numbers separately, so numbers never pass through translation. Claude writes the letters in Spanish, with the same dollar-amount check.

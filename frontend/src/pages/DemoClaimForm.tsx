@@ -7,10 +7,10 @@ import { LangSwitch, t } from '../lib/i18n'
 // With ?agent=1 the Submit button is disabled, so an agent cannot submit it
 // even if it ignored its instructions.
 
-const FIELDS: { name: string; label: string; type?: string; half?: boolean }[] = [
+const FIELDS: { name: string; label: string; type?: string; half?: boolean; required?: boolean }[] = [
   { name: 'name', label: 'Full name' },
-  { name: 'phone', label: 'Phone', type: 'tel', half: true },
-  { name: 'email', label: 'Email', type: 'email', half: true },
+  { name: 'phone', label: 'Phone', type: 'tel', half: true, required: true },
+  { name: 'email', label: 'Email', type: 'email', half: true, required: true },
   { name: 'employer', label: 'Employer name' },
   { name: 'payPeriodStart', label: 'Pay period start', type: 'date', half: true },
   { name: 'payPeriodEnd', label: 'Pay period end', type: 'date', half: true },
@@ -67,11 +67,18 @@ export default function DemoClaimForm() {
               <div key={field.name} className={field.half ? 'col-span-2 sm:col-span-1' : 'col-span-2'}>
                 <label htmlFor={field.name} className="label">
                   {t(field.label)}
+                  {field.required && (
+                    <span className="text-bad" aria-hidden="true">
+                      {' '}*
+                    </span>
+                  )}
                 </label>
                 <input
                   id={field.name}
                   name={field.name}
                   type={field.type ?? 'text'}
+                  required={field.required}
+                  autoComplete={field.name === 'email' ? 'email' : field.name === 'phone' ? 'tel' : undefined}
                   className="field"
                   value={values[field.name]}
                   onChange={(event) => set(field.name, event.target.value)}

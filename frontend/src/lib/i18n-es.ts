@@ -625,3 +625,12 @@ Object.assign(ES, {
   'Your log shows it was never changed after the fact. It cannot prove you were at work, but the time and place on each tap make it hard to fake.':
     'Su registro muestra que nunca se cambió después. No puede probar que usted estaba en el trabajo, pero la hora y el lugar de cada toque lo hacen difícil de falsificar.',
 })
+
+// Required phone and email, seal warning
+Object.assign(ES, {
+  'Phone (needed for the claim form)': 'Teléfono (necesario para el formulario de reclamo)',
+  'Email (needed for the claim form)': 'Correo electrónico (necesario para el formulario de reclamo)',
+  "Add your name, your employer's name, your phone and your email above first.": 'Primero agregue arriba su nombre, el de su empleador, su teléfono y su correo electrónico.',
+  'Rewritten after it was sealed.': 'Reescrito después de sellarse.',
+  'This log no longer matches the copy that was locked away on {when}.': 'Este registro ya no coincide con la copia que se guardó bajo llave el {when}.',
+})

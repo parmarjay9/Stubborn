@@ -29,7 +29,11 @@ export const store = {
     save('stubborn.letters', null) // letters belong to one check
   },
   // The sample account comes with its made-up worker already filled in.
-  getWorker: () => ({ ...EMPTY_WORKER, ...(isDemo() ? SAMPLE_WORKER : {}), ...load<Partial<Worker>>('stubborn.worker', {}) }),
+  getWorker: () => {
+    // Blank saved fields do not wipe out the sample worker's made-up details.
+    const saved = Object.fromEntries(Object.entries(load<Partial<Worker>>('stubborn.worker', {})).filter(([, v]) => v))
+    return { ...EMPTY_WORKER, ...(isDemo() ? SAMPLE_WORKER : {}), ...saved }
+  },
   setWorker: (worker: Worker) => save('stubborn.worker', worker),
   getLetters: () => load<Letters | null>('stubborn.letters', null),
   setLetters: (letters: Letters) => save('stubborn.letters', letters),

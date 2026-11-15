@@ -13,7 +13,8 @@ const SEEDED_KEY = 'stubborn.sampleSeeded'
 // Page state that belongs to one account and must not leak into the other.
 const PER_ACCOUNT_KEYS = ['stubborn.lastCheck', 'stubborn.letters', 'stubborn.worker']
 
-export const SAMPLE_WORKER = { name: 'Alex Rivera', employer: 'Desert Sun Logistics LLC' }
+// Made up: 555-01xx numbers are reserved for fiction and example.com is a reserved domain.
+export const SAMPLE_WORKER = { name: 'Alex Rivera', employer: 'Desert Sun Logistics LLC', phone: '480-555-0142', email: 'alex.rivera@example.com' }
 
 function read(key: string): string | null {
   try {

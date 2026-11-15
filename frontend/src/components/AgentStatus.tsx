@@ -74,7 +74,7 @@ export default function AgentStatus({ claim, ready }: { claim: Claim; ready: boo
           <button type="button" className="btn btn-primary" disabled={!ready} onClick={start}>
             {t('Fill in the claim form for me')}
           </button>
-          {!ready && <p className="text-sm text-muted">{t("Add your name and your employer's name above first.")}</p>}
+          {!ready && <p className="text-sm text-muted">{t("Add your name, your employer's name, your phone and your email above first.")}</p>}
         </>
       )}
 

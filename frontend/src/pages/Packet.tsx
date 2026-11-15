@@ -85,8 +85,8 @@ export default function Packet() {
   const period = check?.payPeriod
   const inPeriod = (ts: string) => !period || (ts.slice(0, 10) >= period.start && ts.slice(0, 10) <= period.end)
   const shifts = pairShifts(packet.entries.map((e) => ({ ...e, deviceId: packet.deviceId }) as Entry)).filter((s) => inPeriod(s.inEntry.clientTs))
-  const chainOk = local.brokenAt === null && packet.verify.valid
   const seal = packet.seal
+  const chainOk = local.brokenAt === null && packet.verify.valid && (!seal || seal.matches)
 
   return (
     <div className="packet min-h-dvh bg-paper print:bg-white">
@@ -155,24 +155,15 @@ export default function Packet() {
                   : t('The chain breaks at entry {n}.', { n: packet.verify.brokenAtSeq ?? '' })}
               </span>
             </li>
-            <li className="flex gap-2">
-              {seal ? <Mark ok={seal.matches} /> : <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 border-ink/30" />}
-              <span>
-                <b>{t('Locked seal.')}</b>{' '}
-                {seal
-                  ? seal.matches
-                    ? t("On {when} the log's latest fingerprint (#{hash}, entry {n}) was written to locked AWS storage that cannot be edited. Today's log still matches it.", {
-                        when: when(seal.sealedAt),
-                        hash: seal.headHash.slice(0, 10),
-                        n: seal.count,
-                      })
-                    : t('The log no longer matches the fingerprint locked away on {when}. Entries up to {n} were changed after that.', {
-                        when: when(seal.sealedAt),
-                        n: seal.count,
-                      })
-                  : t('This log has not been sealed yet. Logs are sealed every night at 11:59 PM.')}
-              </span>
-            </li>
+            {seal && !seal.matches && (
+              <li className="flex gap-2">
+                <Mark ok={false} />
+                <span>
+                  <b>{t('Rewritten after it was sealed.')}</b>{' '}
+                  {t('This log no longer matches the copy that was locked away on {when}.', { when: when(seal.sealedAt) })}
+                </span>
+              </li>
+            )}
           </ul>
         </section>
 

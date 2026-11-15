@@ -14,8 +14,8 @@ const WORKER_FIELDS: { name: keyof Worker; label: string; type: string; autoComp
   { name: 'name', label: 'Your name', type: 'text', autoComplete: 'name', required: true },
   { name: 'employer', label: "Employer's name (as on your stub)", type: 'text', autoComplete: 'organization', required: true },
   { name: 'managerName', label: "Manager's first name (optional)", type: 'text', autoComplete: 'off' },
-  { name: 'phone', label: 'Phone (optional)', type: 'tel', autoComplete: 'tel' },
-  { name: 'email', label: 'Email (optional)', type: 'email', autoComplete: 'email' },
+  { name: 'phone', label: 'Phone (needed for the claim form)', type: 'tel', autoComplete: 'tel' },
+  { name: 'email', label: 'Email (needed for the claim form)', type: 'email', autoComplete: 'email' },
 ]
 
 export default function Act() {
@@ -165,7 +165,7 @@ export default function Act() {
         <p className="text-sm text-muted">
           {t('A web agent fills in a claim form with your details and your numbers, then stops so you can review. It never presses submit.')}
         </p>
-        <AgentStatus claim={claim} ready={Boolean(claim.name && claim.employer)} />
+        <AgentStatus claim={claim} ready={Boolean(claim.name && claim.employer && claim.phone && claim.email)} />
         <p className="text-xs leading-relaxed text-muted">
           {t('For this demo the agent fills a practice form, not a government one. Real unpaid wage claims in Arizona go to the Labor Department of the Industrial Commission of Arizona.')}
         </p>
