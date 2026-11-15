@@ -5,6 +5,7 @@ import ClockButton from '../components/ClockButton'
 import ShiftList from '../components/ShiftList'
 import StepTrail from '../components/StepTrail'
 import { api, type VerifyResult } from '../lib/api'
+import { loadLog } from '../lib/offline'
 import { getDeviceId, isDemo } from '../lib/device'
 import type { Entry } from '../lib/hashchain'
 
@@ -13,13 +14,19 @@ export default function Log() {
   const [verify, setVerify] = useState<VerifyResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [toggling, setToggling] = useState(false)
+  const [pending, setPending] = useState(0)
+  const [offline, setOffline] = useState(false)
+  const [conflict, setConflict] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     const deviceId = getDeviceId()
     try {
-      const [list, check] = await Promise.all([api.listShifts(deviceId), api.verify(deviceId)])
-      setEntries(list.entries)
-      setVerify(check)
+      const log = await loadLog(deviceId)
+      setEntries(log.entries)
+      setPending(log.pending)
+      setOffline(log.offline)
+      setConflict(log.conflict)
+      setVerify(log.offline ? null : await api.verify(deviceId))
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load your hours.')
@@ -28,6 +35,9 @@ export default function Log() {
 
   useEffect(() => {
     refresh()
+    // Send saved taps as soon as the phone gets signal back.
+    window.addEventListener('online', refresh)
+    return () => window.removeEventListener('online', refresh)
   }, [refresh])
 
   const tampered = verify ? !verify.valid : false
@@ -63,7 +73,29 @@ export default function Log() {
 
       {entries ? <ClockButton entries={entries} onChange={refresh} /> : !error && <div className="skeleton mx-auto h-44 w-44 !rounded-full" />}
 
-      <ChainBadge result={verify} failed={Boolean(error) && !verify} />
+      {(offline || pending > 0) && (
+        <div role="status" className="rounded-xl border-2 border-dashed border-ink bg-hi-soft px-4 py-3 text-sm">
+          <p className="font-bold">{offline ? 'No signal right now' : 'Sending saved taps...'}</p>
+          <p className="mt-0.5 text-muted">
+            {pending > 0
+              ? `${pending} ${pending === 1 ? 'tap is' : 'taps are'} saved on this phone with the time you tapped. ${offline ? 'They will send by themselves when you are back online.' : ''}`
+              : 'You can still clock in and out. Taps are saved on this phone until you are back online.'}
+          </p>
+        </div>
+      )}
+      {conflict && (
+        <p className="rounded-xl border-2 border-bad bg-bad-soft px-4 py-3 text-sm text-bad">
+          A saved tap could not be sent: {conflict}
+        </p>
+      )}
+
+      {offline ? (
+        <div className="rounded-xl border-2 border-ink/30 bg-card px-4 py-3 text-sm text-muted">
+          The log seal is checked by the server. It will be checked again when you are back online.
+        </div>
+      ) : (
+        <ChainBadge result={verify} failed={Boolean(error) && !verify} />
+      )}
 
       {entries ? <ShiftList entries={entries} /> : !error && <div className="skeleton h-64 !rounded-3xl" />}
 

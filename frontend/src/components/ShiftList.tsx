@@ -39,6 +39,11 @@ export default function ShiftList({ entries }: { entries: Entry[] }) {
                   {day.shifts.map((shift) => (
                     <p key={shift.inEntry.seq} className="font-mono text-sm text-muted">
                       {clockTime(shift.inEntry.clientTs)} to {shift.outEntry ? clockTime(shift.outEntry.clientTs) : 'now (on the clock)'}
+                      {(shift.inEntry.pending || shift.outEntry?.pending) && (
+                        <span className="ml-1.5 rounded border border-ink/40 px-1 font-sans text-[0.7rem] font-bold uppercase text-ink">
+                          Not sent yet
+                        </span>
+                      )}
                       {shift.inEntry.lat !== null && (
                         <span title="Location stamped" aria-label="Location stamped" className="ml-1.5 text-accent">
                           ●

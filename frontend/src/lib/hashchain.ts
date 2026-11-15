@@ -20,6 +20,8 @@ export interface EntryCore {
 export interface Entry extends EntryCore {
   hash: string
   serverTs?: string
+  /** Only on the phone: saved without signal, not sent yet. */
+  pending?: boolean
 }
 
 /** Round a coordinate to 6 decimals (about 11 cm) before it is stored or hashed. */

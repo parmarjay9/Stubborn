@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ApiError, api } from '../lib/api'
+import { ApiError } from '../lib/api'
 import { getDeviceId } from '../lib/device'
 import { clockTime, localIso } from '../lib/format'
+import { recordTap } from '../lib/offline'
 import { ZERO_HASH, hashEntry, roundCoord, type Entry, type EntryCore } from '../lib/hashchain'
 
 interface Spot {
@@ -57,10 +58,14 @@ export default function ClockButton({ entries, onChange }: { entries: Entry[]; o
         ...spot,
         prevHash: head ? head.hash : ZERO_HASH,
       }
-      await api.appendShift({ ...core, hash: await hashEntry(core) })
+      const outcome = await recordTap({ ...core, hash: await hashEntry(core) })
       setNote(
         `${core.type === 'IN' ? 'Clocked in' : 'Clocked out'} at ${clockTime(core.clientTs)}. ` +
-          (spot.lat === null ? 'Location was not available, so this entry has the time only.' : 'Time and location saved.'),
+          (outcome === 'queued'
+            ? 'No signal right now, so it is saved on this phone and will send by itself when you are back online.'
+            : spot.lat === null
+              ? 'Location was not available, so this entry has the time only.'
+              : 'Time and location saved.'),
       )
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'That did not save. Please try again.')
